@@ -268,7 +268,7 @@
                         </div>
                     </section>
 
-                    {/* METODOLOGIA LEXIS - POR QUE FUNCIONA */}
+                    {/* METODOLOGIA LEXIS - POR QUE FUNCIONA + BENEFÍCIOS ATIVOS */}
                     <section id="metodologia" className="py-24 px-6 bg-[#0f172a] text-white scroll-mt-20 border-y border-white/5">
                         <div className="max-w-6xl mx-auto text-center">
                             <SectionHeader 
@@ -276,7 +276,9 @@
                                 title="Por que o Método Lexis Funciona?" 
                                 subtitle="Baseado em neurociência e aprendizado acelerado, focamos na automação, não na teoria."
                             />
-                            <div className="grid md:grid-cols-4 gap-8">
+                            
+                            {/* 4 Pilares Técnicos */}
+                            <div className="grid md:grid-cols-4 gap-8 mb-20">
                                 {[
                                     { t: "Aula Invertida", d: "Estude antes, pratique muito mais em aula.", icon: "🔄" },
                                     { t: "Instrução por Pares", d: "Aprenda e ensine, solidificando o saber.", icon: "👥" },
@@ -287,6 +289,22 @@
                                         <div className="text-4xl mb-4">{item.icon}</div>
                                         <h4 className="font-bold text-xl mb-2">{item.t}</h4>
                                         <p className="text-[#94a3b8] text-sm">{item.d}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* 4 Benefícios da Metodologia Ativa */}
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {[
+                                    { b: "Processamento Rápido", d: "Treinamos seu cérebro para responder sem precisar traduzir cada palavra mentalmente.", icon: "⚡" },
+                                    { b: "Retenção de Longo Prazo", d: "Através da prática constante, o conteúdo sai da memória de curto prazo para a memória permanente.", icon: "📈" },
+                                    { b: "Confiança em Tempo Real", d: "Simulamos situações reais de pressão para que você fale com naturalidade em qualquer cenário.", icon: "🛡️" },
+                                    { b: "Aprendizado Personalizado", d: "O foco é na sua necessidade, corrigindo vícios fonéticos e acelerando suas metas específicas.", icon: "🎯" }
+                                ].map((benefit, i) => (
+                                    <div key={i} className="bg-gradient-to-br from-white/5 to-transparent p-6 rounded-2xl border border-white/5 text-left">
+                                        <div className="text-2xl mb-3">{benefit.icon}</div>
+                                        <h5 className="font-black text-[#fbd24c] text-sm uppercase mb-2 tracking-tighter">{benefit.b}</h5>
+                                        <p className="text-[#94a3b8] text-xs leading-relaxed">{benefit.d}</p>
                                     </div>
                                 ))}
                             </div>
