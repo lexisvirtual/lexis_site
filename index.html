@@ -135,6 +135,38 @@
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[600px] bg-[#fbd24c]/5 rounded-full blur-[120px] pointer-events-none"></div>
                     </header>
 
+                    {/* SEÇÃO: POR QUE TRATAR INGLÊS COMO HABILIDADE (CIÊNCIA) */}
+                    <section className="py-24 px-6 bg-slate-50 text-[#0f172a]">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="grid md:grid-cols-2 gap-16 items-center">
+                                <div>
+                                    <span className="text-[#8c5414] font-bold tracking-widest uppercase text-xs mb-4 block underline decoration-[#fbd24c] decoration-4 underline-offset-8">A Ciência por trás do Método</span>
+                                    <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">Por que aprender Inglês como uma <span className="text-[#8c5414]">Habilidade</span> é o único caminho inteligente?</h2>
+                                    <div className="space-y-6 text-slate-600 text-lg">
+                                        <p>Idiomas não são matérias escolares para serem "estudadas". Eles residem na mesma área do cérebro que controla <strong>habilidades motoras e esportes cognitivos.</strong></p>
+                                        <p>Saber regras gramaticais não faz ninguém falar, do mesmo jeito que ler sobre natação não faz ninguém nadar. A fluência autônoma acontece quando a fala sai da <em>reflexão consciente</em> e entra na <em>automação.</em></p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 gap-4">
+                                    {[
+                                        { t: "Processamento em Tempo Real", d: "Coordenação instantânea entre ouvir, pensar e responder, sem travas.", i: "🧠" },
+                                        { t: "Coordenação Motora Fina", d: "Treino dos músculos faciais para fonética perfeita e natural.", i: "🗣️" },
+                                        { t: "Tomada de Decisão", d: "Escolha automática de estruturas para expressar ideias complexas.", i: "⚖️" },
+                                        { t: "Automação Cognitiva", d: "A resposta sai antes de você 'pensar' a frase em português.", i: "🚀" }
+                                    ].map((skill, idx) => (
+                                        <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex gap-6 items-start">
+                                            <div className="text-3xl">{skill.i}</div>
+                                            <div>
+                                                <h4 className="font-black text-[#0f172a] mb-1">{skill.t}</h4>
+                                                <p className="text-sm text-slate-500">{skill.d}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* MODALIDADES - SELETOR */}
                     <section id="modalidades" className="py-24 px-6 bg-[#0f172a] border-t border-white/5 scroll-mt-20">
                         <div className="max-w-6xl mx-auto">
