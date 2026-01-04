@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodologia Lexis | Inglês não é conhecimento, é habilidade.</title>
+    <meta name="description" content="Pare de estudar inglês como uma matéria escolar. Treine como um atleta. Conheça o Método Lexis e alcance a fluência através da automação cognitiva.">
+    
+    <!-- OpenGraph -->
+    <meta property="og:title" content="Metodologia Lexis | Fluência em Inglês">
+    <meta property="og:description" content="O idioma não se aprende, se treina. Descubra por que tratar o inglês como habilidade é a chave para o seu sucesso.">
+    <meta property="og:type" content="website">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & Babel CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        accent: '#fbd24c',
+                        secondary: '#94a3b8',
+                        highlight: '#8c5414',
+                        neutralIcon: '#798c8c',
+                        softOverlay: '#f59e0b33',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .cta-shadow { box-shadow: 0 10px 25px -5px rgba(251, 210, 76, 0.4); }
+        .gradient-bg { background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); }
+        /* Mobile First adjustments */
+        @media (max-width: 640px) {
+            h1 { font-size: 2.25rem !important; line-height: 2.5rem !important; }
+        }
+    </style>
+</head>
+<body class="bg-white text-primary antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Button = ({ children, primary = false, className = "" }) => (
+            <button 
+                className={`px-8 py-4 rounded-full font-bold text-lg transition-all active:scale-95 text-center ${
+                    primary 
+                    ? "bg-[#fbd24c] text-[#0f172a] cta-shadow hover:bg-yellow-400 w-full md:w-auto" 
+                    : "border-2 border-[#fbd24c] text-[#fbd24c] hover:bg-[#fbd24c] hover:text-[#0f172a] w-full md:w-auto"
+                } ${className}`}
+                onClick={() => window.open('https://wa.me/#', '_blank')}
+            >
+                {children}
+            </button>
+        );
+
+        const SectionTitle = ({ children, dark = false, align = "center" }) => (
+            <h2 className={`text-3xl md:text-5xl font-extrabold mb-8 leading-tight ${dark ? "text-white" : "text-[#0f172a]"} ${align === "center" ? "text-center" : "text-left"}`}>
+                {children}
+            </h2>
+        );
+
+        const App = () => {
+            return (
+                <div className="flex flex-col w-full min-h-screen">
+                    {/* 1. HERO SECTION */}
+                    <header className="bg-[#0f172a] text-white pt-20 pb-32 px-6 relative overflow-hidden">
+                        <div className="max-w-6xl mx-auto flex flex-col items-center text-center relative z-10">
+                            <span className="text-[#fbd24c] font-semibold tracking-widest uppercase mb-4 text-xs md:text-sm">Metodologia Lexis</span>
+                            <h1 className="text-4xl md:text-7xl font-black mb-6">
+                                Inglês não é conhecimento. <br/>
+                                <span className="text-[#fbd24c]">É habilidade.</span>
+                            </h1>
+                            <p className="text-[#94a338] text-lg md:text-xl max-w-2xl mb-10 leading-relaxed opacity-90">
+                                Pare de estudar inglês como uma matéria escolar. O idioma não se aprende, se treina. Alcance a fluência através da automação cognitiva.
+                            </p>
+                            
+                            <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 w-full max-w-4xl text-left">
+                                <li className="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
+                                    <span className="text-[#fbd24c] text-xl">⚡</span>
+                                    <span className="text-sm font-medium">Processamento rápido</span>
+                                </li>
+                                <li className="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
+                                    <span className="text-[#fbd24c] text-xl">🧠</span>
+                                    <span className="text-sm font-medium">Automação mental</span>
+                                </li>
+                                <li className="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
+                                    <span className="text-[#fbd24c] text-xl">🚀</span>
+                                    <span className="text-sm font-medium">Resposta sem travas</span>
+                                </li>
+                            </ul>
+
+                            <Button primary>QUERO SABER COMO FUNCIONA</Button>
+                        </div>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#fbd24c]/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+                    </header>
+
+                    {/* 2. O PROBLEMA DO LEAD */}
+                    <section className="py-24 px-6 bg-white overflow-hidden">
+                        <div className="max-w-4xl mx-auto">
+                            <SectionTitle align="left">O erro de tratar o inglês como uma "matéria escolar".</SectionTitle>
+                            <div className="space-y-6 text-lg md:text-xl leading-relaxed text-slate-700">
+                                <p>
+                                    Você já passou anos em cursos tradicionais, decorou listas de palavras e regras gramaticais, mas na hora de falar... <strong>você trava.</strong>
+                                </p>
+                                <p>
+                                    O motivo é simples: saber regras não faz ninguém falar. Idioma funciona como um esporte. Conhecer as regras do futebol não faz ninguém jogar bem sem treino físico e tático.
+                                </p>
+                                <div className="bg-[#f59e0b33] p-8 border-l-8 border-[#fbd24c] rounded-lg mt-12">
+                                    <p className="font-bold text-[#8c5414] italic">
+                                        "Ler sobre natação não faz ninguém nadar. Estudar teoria musical não faz ninguém tocar um instrumento. Inglês se treina, não se estuda."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* 3. A SOLUÇÃO */}
+                    <section className="py-24 px-6 bg-slate-50">
+                        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <SectionTitle align="left">A Metodologia Lexis</SectionTitle>
+                                <p className="text-lg text-slate-600 mb-8">
+                                    Nossa metodologia parte de um princípio simples e comprovado: o idioma é um <strong>esporte cognitivo</strong>. Focamos na coordenação entre ouvir, pensar e responder em tempo real.
+                                </p>
+                                <div className="space-y-8">
+                                    {[
+                                        { t: "Fim da tradução mental", d: "Treinamos seu cérebro para responder direto no idioma alvo." },
+                                        { t: "Fluência por automação", d: "As frases saem naturais, sem esforço consciente." },
+                                        { t: "Uso orientado", d: "Cada minuto de treino é focado em situações reais de uso." }
+                                    ].map((item, idx) => (
+                                        <div key={idx} className="flex gap-6">
+                                            <div className="flex-shrink-0 w-12 h-12 bg-[#0f172a] text-[#fbd24c] flex items-center justify-center rounded-xl font-bold text-xl">
+                                                {idx + 1}
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-xl text-[#0f172a] mb-1">{item.t}</h4>
+                                                <p className="text-slate-500 leading-snug">{item.d}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="bg-[#0f172a] p-12 rounded-[2.5rem] text-white shadow-2xl relative">
+                                <h3 className="text-2xl font-bold mb-6">Mudar o jogo exige uma nova abordagem.</h3>
+                                <p className="text-[#94a3b8] mb-10 text-lg leading-relaxed">
+                                    Para quem busca autoridade e sofisticação no mercado global, o inglês não pode ser um obstáculo. Ele deve ser sua ferramenta mais afiada.
+                                </p>
+                                <Button className="w-full">RECEBER DETALHES PERSONALIZADOS</Button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* 4. POR QUE ESCOLHER */}
+                    <section className="py-24 px-6 bg-white text-center">
+                        <div className="max-w-4xl mx-auto">
+                            <SectionTitle>Por que tratar inglês como uma habilidade?</SectionTitle>
+                            <div className="grid md:grid-cols-2 gap-10 mt-16 text-left">
+                                <div className="p-8 border border-slate-100 rounded-3xl hover:shadow-xl transition-all">
+                                    <div className="text-4xl mb-6">🎯</div>
+                                    <h4 className="text-xl font-bold mb-4">Automação vs Reflexão</h4>
+                                    <p className="text-slate-500">Quando você tenta 'pensar' a frase antes de falar, você trava. Na Lexis, a resposta sai automática.</p>
+                                </div>
+                                <div className="p-8 border border-slate-100 rounded-3xl hover:shadow-xl transition-all">
+                                    <div className="text-4xl mb-6">⚡</div>
+                                    <h4 className="text-xl font-bold mb-4">Processamento em tempo real</h4>
+                                    <p className="text-slate-500">Treinamos a coordenação entre ouvir e falar de forma síncrona, como um piloto de alta performance.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* 8. CTA FINAL */}
+                    <section className="py-24 px-6 bg-[#0f172a] text-white text-center relative overflow-hidden">
+                        <div className="max-w-4xl mx-auto relative z-10">
+                            <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight">
+                                Transforme seu inglês em uma <br/>
+                                <span className="text-[#fbd24c]">vantagem competitiva.</span>
+                            </h2>
+                            <p className="text-xl text-[#94a3b8] mb-12 max-w-2xl mx-auto">
+                                Se você busca fluência real, automação e autoridade, seu lugar é aqui.
+                            </p>
+                            <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+                                <Button primary>FALAR COM UM CONSULTOR</Button>
+                                <Button>SOLICITAR UMA PROPOSTA</Button>
+                            </div>
+                        </div>
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[800px] h-[800px] bg-[#fbd24c]/5 rounded-full blur-3xl"></div>
+                    </section>
+
+                    {/* RODAPÉ */}
+                    <footer className="py-12 px-6 bg-[#0f172a] border-t border-white/10 text-[#94a3b8] text-center">
+                        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div className="text-left">
+                                <p className="font-bold text-white text-lg">Lexis Habilidades Linguísticas</p>
+                                <p className="text-sm">Estratégia, Treino e Alta Performance.</p>
+                            </div>
+                            <div className="text-sm">
+                                <p>© 2024 - Todos os direitos reservados.</p>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
