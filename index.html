@@ -73,7 +73,8 @@
         const { useState, useEffect } = React;
 
         const LeadModal = ({ isOpen, onClose, defaultCourse = "" }) => {
-            const [formData, setFormData] = useState({ name: '', phone: '', course: defaultCourse });
+            const [formData, setFormData] = useState({ name: '', email: '', phone: '', course: defaultCourse });
+            const [isSubmitting, setIsSubmitting] = useState(false);
             
             useEffect(() => {
                 if (isOpen) setFormData(prev => ({ ...prev, course: defaultCourse }));
@@ -81,17 +82,23 @@
 
             if (!isOpen) return null;
 
-            const handleSubmit = (e) => {
+            const handleSubmit = async (e) => {
                 e.preventDefault();
-                const message = `Olá! Meu nome é ${formData.name}. Gostaria de mais informações sobre o curso: ${formData.course}. Meu WhatsApp é ${formData.phone}.`;
+                setIsSubmitting(true);
+                
+                const message = `Olá! Meu nome é ${formData.name}. Gostaria de mais informações sobre o curso: ${formData.course}. \nE-mail: ${formData.email}\nWhatsApp: ${formData.phone}`;
                 const encodedMessage = encodeURIComponent(message);
-                window.open(`https://wa.me/5516994051552?text=${encodedMessage}`, '_blank');
-                onClose();
+                
+                setTimeout(() => {
+                    window.open(`https://wa.me/5516994051552?text=${encodedMessage}`, '_blank');
+                    setIsSubmitting(false);
+                    onClose();
+                }, 800);
             };
 
             return (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 modal-overlay animate-in fade-in duration-300">
-                    <div className="bg-[#0f172a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 relative shadow-2xl overflow-hidden">
+                    <div className="bg-[#0f172a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 relative shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#fbd24c] to-[#f59e0b]"></div>
                         <button onClick={onClose} className="absolute top-6 right-6 text-white/40 hover:text-[#fbd24c] transition-colors">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -99,12 +106,12 @@
                         
                         <div className="text-center mb-8">
                             <h3 className="text-2xl font-black mb-2">Solicitar Proposta</h3>
-                            <p className="text-white/60 text-sm">Preencha os dados abaixo e receba detalhes personalizados em instantes.</p>
+                            <p className="text-white/60 text-sm">Preencha os dados abaixo para iniciar seu treinamento.</p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-widest text-[#fbd24c] mb-2">Nome Completo</label>
+                                <label className="block text-xs font-bold uppercase tracking-widest text-[#fbd24c] mb-1.5">Nome Completo</label>
                                 <input 
                                     required
                                     type="text" 
@@ -115,7 +122,18 @@
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-widest text-[#fbd24c] mb-2">WhatsApp</label>
+                                <label className="block text-xs font-bold uppercase tracking-widest text-[#fbd24c] mb-1.5">E-mail</label>
+                                <input 
+                                    required
+                                    type="email" 
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors"
+                                    placeholder="Ex: joao@email.com"
+                                    value={formData.email}
+                                    onChange={e => setFormData({...formData, email: e.target.value})}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-widest text-[#fbd24c] mb-1.5">WhatsApp</label>
                                 <input 
                                     required
                                     type="tel" 
@@ -126,8 +144,9 @@
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-widest text-[#fbd24c] mb-2">Curso de Interesse</label>
+                                <label className="block text-xs font-bold uppercase tracking-widest text-[#fbd24c] mb-1.5">Curso de Interesse</label>
                                 <select 
+                                    required
                                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors appearance-none"
                                     value={formData.course}
                                     onChange={e => setFormData({...formData, course: e.target.value})}
@@ -138,8 +157,20 @@
                                     <option value="The Way Cíclico" className="bg-[#0f172a]">The Way Cíclico (Flexível)</option>
                                 </select>
                             </div>
-                            <button type="submit" className="w-full bg-[#fbd24c] text-[#0f172a] py-4 rounded-xl font-black uppercase tracking-widest hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/20 active:scale-95">
-                                Receber Proposta Gratuita
+                            <button 
+                                type="submit" 
+                                disabled={isSubmitting}
+                                className={`w-full bg-[#fbd24c] text-[#0f172a] py-4 rounded-xl font-black uppercase tracking-widest hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/20 active:scale-95 flex items-center justify-center gap-3 mt-4 ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5 text-[#0f172a]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processando...
+                                    </>
+                                ) : "Receber Proposta via WhatsApp"}
                             </button>
                         </form>
                     </div>
@@ -198,7 +229,7 @@
                         </div>
 
                         <button 
-                            onClick={onOpenModal}
+                            onClick={() => onOpenModal()}
                             className="bg-[#fbd24c] text-[#0f172a] px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-yellow-400 transition-all active:scale-95 shadow-lg shadow-yellow-500/20"
                         >
                             Falar com consultor
@@ -220,7 +251,7 @@
 
             return (
                 <div className="flex flex-col w-full min-h-screen">
-                    <Navbar onOpenModal={() => openModal()} />
+                    <Navbar onOpenModal={openModal} />
                     <LeadModal 
                         isOpen={isModalOpen} 
                         onClose={() => setIsModalOpen(false)} 
@@ -468,7 +499,7 @@
                                     { n: "Ricardo M.", j: "Diretor Comercial", d: "Tentei 4 escolas tradicionais e nunca saí do 'The book is on the table'. Com 2 semanas de Imersão Lexis, destravei reuniões com a matriz na Alemanha que antes eram um pesadelo." },
                                     { n: "Ana Clara F.", j: "Arquiteta", d: "O método cíclico The Way foi o único que se adaptou à minha agenda louca. Poder alternar os horários sem perder conteúdo salvou minha fluência." },
                                     { n: "Gustavo S.", j: "Desenvolvedor Sr.", d: "O foco em automação cognitiva no Maestria Online é bizarro. Eu parei de traduzir mentalmente e as frases começaram a sair naturais em menos de 2 meses." },
-                                    { n: "Juliana T.", j: "Marketing Digital", d: "A Garantia Vitalícia me deu segurança, mas nem precisei. O suporte do Gab AI no WhatsApp é incrível para manter o treino diário." },
+                                    { n: "Juliana T.", j: "Marketing Digital", d: "A Garantia Vitalícia me deu segurança, mas nem precisei. O suporte do Gab AI no WhatsApp é incrível para manter o treino do dia a dia." },
                                     { n: "Felipe R.", j: "Engenheiro de Produção", d: "A imersão presencial foi um divisor de águas. 10 horas por dia focado no esporte cognitivo me deu uma confiança que eu não teria em 2 anos de cursinho." },
                                     { n: "Patrícia L.", j: "Advogada Internacional", d: "A Lexis não ensina inglês, ela treina você para usar o inglês. A abordagem de Aula Invertida otimiza cada minuto com o professor. Recomendo demais!" }
                                 ].map((test, i) => (
