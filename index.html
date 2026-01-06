@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -108,17 +109,8 @@
 
         .modality-card { position: relative; border-radius: 2.5rem; overflow: hidden; transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); border: 1px solid rgba(255,255,255,0.05); }
         .modality-card:hover { transform: translateY(-10px); }
-        .benefit-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 12px; }
         
-        .modality-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at top right, rgba(255,255,255,0.05), transparent);
-            pointer-events: none;
-        }
-
-        .animate-float-in { animation: float-slow 8s ease-in-out infinite; }
+        .logo-fallback { background: #fbd24c; color: #0f172a; font-weight: 800; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="bg-[#0f172a] text-white antialiased">
@@ -130,7 +122,6 @@
         const WHATSAPP_NUMBERS = [
             "5516988183210",
             "5516993051154",
-            "5517996507647",
             "5516996385145"
         ];
 
@@ -147,6 +138,26 @@
                 document.querySelectorAll('.reveal, .reveal-left').forEach(el => observer.observe(el));
                 return () => observer.disconnect();
             }, []);
+        };
+
+        const Logo = ({ className = "w-10 h-10" }) => {
+            const [imgError, setImgError] = useState(false);
+            return (
+                <div className={`${className} relative overflow-hidden rounded-lg group-hover:rotate-12 transition-transform duration-300`}>
+                    {!imgError ? (
+                        <img 
+                            src="logo.png" 
+                            alt="Lexis English Academy Logo - Treinamento de Alta Performance" 
+                            className="w-full h-full object-contain"
+                            onError={() => setImgError(true)}
+                        />
+                    ) : (
+                        <div className="w-full h-full logo-fallback text-xs tracking-tighter">
+                            LX
+                        </div>
+                    )}
+                </div>
+            );
         };
 
         const FAQItem = ({ question, answer, index }) => {
@@ -288,7 +299,7 @@
                 <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled ? "navbar-blur py-3 shadow-2xl" : "bg-transparent py-8"}`}>
                     <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
                         <div className="flex items-center gap-3 group cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-                            <img src="logo.png" alt="Lexis Logo" className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform duration-300" />
+                            <Logo />
                             <span className="font-extrabold text-lg tracking-tighter hidden md:block group-hover:text-[#fbd24c] transition-colors uppercase text-white">Lexis Academy</span>
                         </div>
                         <div className="hidden md:flex items-center gap-8 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#94a3b8]">
@@ -331,15 +342,25 @@
                         <div className="bg-mesh opacity-40"></div>
                         <div className="max-w-6xl mx-auto text-center relative z-10 reveal">
                             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.8rem] font-extrabold mb-10 leading-[1.05] tracking-tight text-white">
-                                Inglês é uma <span className="text-[#fbd24c]">habilidade.</span> <br/> 
+                                Inglês é uma <span className="text-gradient">habilidade.</span> <br/> 
                                 Treine como um atleta.
                             </h1>
                             <p className="text-[#94a3b8] text-lg md:text-2xl max-w-4xl mx-auto mb-16 leading-relaxed font-medium">
                                 A Lexis English Academy transforma o aprendizado em automação cognitiva. Escolha seu caminho e alcance a fluência real em tempo recorde.
                             </p>
-                            <div className="flex flex-col md:flex-row gap-6 justify-center reveal reveal-delay-2">
+                            <div className="flex flex-col md:flex-row gap-6 justify-center reveal reveal-delay-2 mb-20">
                                 <Button primary onClick={() => openModal()}>Falar com um especialista</Button>
                                 <Button onClick={() => document.getElementById('modalidades').scrollIntoView({behavior: 'smooth'})}>Conhecer as modalidades</Button>
+                            </div>
+                            
+                            {/* Trust Bar */}
+                            <div className="pt-12 border-t border-white/5 reveal reveal-delay-3">
+                                <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-black mb-8">Baseado em princípios de</p>
+                                <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
+                                    <span className="font-black text-xl tracking-tighter">NEUROSCIENCE</span>
+                                    <span className="font-black text-xl tracking-tighter">COGNITION</span>
+                                    <span className="font-black text-xl tracking-tighter">PERFORMANCE</span>
+                                </div>
                             </div>
                         </div>
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-[140px] pointer-events-none"></div>
@@ -468,7 +489,7 @@
                         </div>
                     </section>
 
-                    {/* MODALIDADES - ARQUITETURAS DE SUCESSO (REFINED) */}
+                    {/* MODALIDADES - ARQUITETURAS DE SUCESSO */}
                     <section id="modalidades" className="py-32 px-6 bg-[#020617] scroll-mt-20 relative overflow-hidden text-white">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px]"></div>
                         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#fbd24c]/5 rounded-full blur-[120px]"></div>
@@ -522,6 +543,10 @@
                                         </div>
                                         <h3 className="text-3xl font-black mb-6 uppercase tracking-tight text-white group-hover:text-lexisPurple transition-colors">Imersão<br/><span className="text-lexisPurple/80">Presencial</span></h3>
                                         <p className="text-slate-300 text-sm mb-8 leading-relaxed font-medium">A transformação mais rápida do mercado. 10 horas diárias de prática intensiva para detonar bloqueios e alcançar fluência funcional imediata.</p>
+                                        <div className="mb-8 p-3 bg-lexisPurple/10 border border-lexisPurple/30 rounded-xl flex items-center gap-3">
+                                            <span className="animate-pulse w-2 h-2 rounded-full bg-red-500"></span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-lexisPurple">Vagas Limitadas para 2026</span>
+                                        </div>
                                         <ul className="space-y-4 mb-10 text-sm font-medium">
                                             <li className="flex items-start gap-3">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-lexisPurple mt-2 shrink-0"></span>
@@ -536,7 +561,7 @@
                                                 <span className="text-slate-200"><strong>Hospedagem:</strong> Indicação de acomodação estratégica inclusa.</span>
                                             </li>
                                         </ul>
-                                        <button onClick={() => openModal('Imersão Presencial')} className="w-full bg-lexisPurple text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-lexisPurple/80 transition-all mt-auto shadow-xl shadow-lexisPurple/30 active:scale-95">Ver Vagas 2026</button>
+                                        <button onClick={() => openModal('Imersão Presencial')} className="w-full bg-lexisPurple text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-lexisPurple/80 transition-all mt-auto shadow-xl shadow-lexisPurple/30 active:scale-95">Ver Vagas Disponíveis</button>
                                     </div>
                                 </div>
 
@@ -615,7 +640,7 @@
                         <div className="max-w-4xl mx-auto relative z-10 reveal text-white">
                             <h2 className="text-4xl md:text-7xl font-extrabold mb-14 leading-[1.1] tracking-tight">
                                 Treine. Domine. <br/> 
-                                Evolua <span className="text-[#fbd24c]">Globalmente.</span>
+                                Evolua <span className="text-gradient">Globalmente.</span>
                             </h2>
                             <Button primary className="text-lg py-6 px-14 scale-110 hover:scale-125 transition-all shadow-yellow-500/20 shadow-2xl" onClick={() => openModal()}>
                                 RECEBER ORIENTAÇÃO
@@ -625,21 +650,24 @@
                     </section>
 
                     {/* FOOTER */}
-                    <footer className="py-20 px-6 bg-[#020617] text-[#94a3b8] border-t border-white/5">
+                    <footer className="py-20 px-6 bg-[#020617] text-slate-400 border-t border-white/5">
                         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-16 text-sm">
                             <div className="text-center md:text-left">
-                                <img src="logo.png" alt="Lexis Logo" className="w-12 h-12 mb-6 mx-auto md:mx-0 object-contain opacity-80" />
+                                <Logo className="w-12 h-12 mb-6 mx-auto md:mx-0 opacity-80" />
                                 <h5 className="text-white font-black mb-6 uppercase tracking-widest">LEXIS ACADEMY</h5>
-                                <p className="font-medium">Rua Visconde de Inhaúma, 1295<br/>São Carlos-SP</p>
+                                <p className="font-medium text-slate-500 leading-relaxed">Rua Visconde de Inhaúma, 1295<br/>São Carlos-SP</p>
                             </div>
                             <div className="text-center">
                                 <h5 className="text-white font-black mb-6 uppercase tracking-widest">Diferenciais</h5>
-                                <p className="font-medium">Garantia Vitalícia</p>
-                                <p className="font-medium">Neuro-Acelerada</p>
+                                <ul className="space-y-2 font-medium">
+                                    <li>Garantia Vitalícia</li>
+                                    <li>Neuro-Acelerada</li>
+                                    <li>Foco Procedural</li>
+                                </ul>
                             </div>
-                            <div className="text-center md:text-right">
-                                <p className="opacity-30 text-xs font-bold uppercase tracking-widest">CNPJ: 38.229.678/0001-13</p>
-                                <p className="mt-3 font-extrabold italic text-white/50 tracking-widest">© 2025 Lexis Academy.</p>
+                            <div className="text-center md:text-right flex flex-col justify-end">
+                                <p className="opacity-30 text-[10px] font-black uppercase tracking-widest mb-2">CNPJ: 38.229.678/0001-13</p>
+                                <p className="font-extrabold italic text-white/50 tracking-widest">© 2025 Lexis Academy.</p>
                             </div>
                         </div>
                     </footer>
