@@ -68,13 +68,22 @@
         .bg-mesh { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(251, 210, 76, 0.05) 1px, transparent 0); background-size: 40px 40px; }
         .modal-overlay { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); }
         .benefit-badge { background: rgba(251, 210, 76, 0.1); border: 1px solid rgba(251, 210, 76, 0.2); color: #fbd24c; padding: 4px 12px; border-radius: 99px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Scroll Animation Utility Classes */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-left { opacity: 0; transform: translateX(-30px); transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+        .reveal-left.active { opacity: 1; transform: translateX(0); }
     </style>
 </head>
 <body class="bg-[#0f172a] text-white antialiased">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         const WHATSAPP_NUMBERS = [
             "5516988183210",
@@ -82,6 +91,47 @@
             "5517996507647",
             "5516996385145"
         ];
+
+        const useRevealOnScroll = () => {
+            useEffect(() => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll('.reveal, .reveal-left').forEach(el => observer.observe(el));
+                return () => observer.disconnect();
+            }, []);
+        };
+
+        const FAQItem = ({ question, answer, index }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            return (
+                <div className={`border-b border-white/5 reveal reveal-delay-${(index % 3) + 1}`}>
+                    <button 
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full py-6 flex justify-between items-center text-left group"
+                    >
+                        <span className={`text-lg font-bold transition-colors ${isOpen ? 'text-[#fbd24c]' : 'text-white group-hover:text-[#fbd24c]'}`}>
+                            {question}
+                        </span>
+                        <span className={`transform transition-transform duration-300 text-[#fbd24c] ${isOpen ? 'rotate-180' : ''}`}>
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 pb-6' : 'max-h-0'}`}>
+                        <p className="text-[#94a3b8] leading-relaxed italic">
+                            {answer}
+                        </p>
+                    </div>
+                </div>
+            );
+        };
 
         const LeadModal = ({ isOpen, onClose, defaultCourse = "" }) => {
             const [formData, setFormData] = useState({ name: '', email: '', phone: '', course: defaultCourse });
@@ -96,12 +146,10 @@
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 setIsSubmitting(true);
-                
                 const message = `Olá! Meu nome é ${formData.name}. Gostaria de mais informações sobre o curso: ${formData.course}. \nE-mail: ${formData.email}\nWhatsApp: ${formData.phone}`;
                 const encodedMessage = encodeURIComponent(message);
                 const randomIndex = Math.floor(Math.random() * WHATSAPP_NUMBERS.length);
                 const selectedNumber = WHATSAPP_NUMBERS[randomIndex];
-                
                 setTimeout(() => {
                     window.open(`https://wa.me/${selectedNumber}?text=${encodedMessage}`, '_blank');
                     setIsSubmitting(false);
@@ -116,12 +164,10 @@
                         <button onClick={onClose} className="absolute top-6 right-6 text-white/40 hover:text-[#fbd24c] transition-colors">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
-                        
                         <div className="text-center mb-8">
                             <h3 className="text-2xl font-black mb-2">Solicitar Proposta</h3>
                             <p className="text-white/60 text-sm">Preencha os dados abaixo para iniciar seu treinamento.</p>
                         </div>
-
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-widest text-[#fbd24c] mb-1.5">Nome Completo</label>
@@ -163,7 +209,7 @@
         );
 
         const SectionHeader = ({ tag, title, subtitle }) => (
-            <div className="mb-16 text-center max-w-4xl mx-auto px-4">
+            <div className="mb-16 text-center max-w-4xl mx-auto px-4 reveal">
                 <span className="text-[#fbd24c] font-bold tracking-[0.2em] uppercase text-xs mb-4 block animate-pulse">{tag}</span>
                 <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">{title}</h2>
                 <p className="text-[#94a3b8] text-lg md:text-xl">{subtitle}</p>
@@ -177,7 +223,6 @@
                 window.addEventListener("scroll", handleScroll);
                 return () => window.removeEventListener("scroll", handleScroll);
             }, []);
-
             return (
                 <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled ? "navbar-blur py-3 shadow-2xl" : "bg-transparent py-6"}`}>
                     <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
@@ -185,30 +230,14 @@
                             <img src="logo.png" alt="Lexis Logo" className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform duration-300" />
                             <span className="font-black text-xl tracking-tighter hidden md:block group-hover:text-[#fbd24c] transition-colors uppercase">Lexis Academy</span>
                         </div>
-                        
                         <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-[#94a3b8]">
-                            <a href="#inicio" className="hover:text-[#fbd24c] transition-colors relative group">
-                                Início
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fbd24c] transition-all group-hover:w-full"></span>
-                            </a>
-                            <a href="#modalidades" className="hover:text-[#fbd24c] transition-colors relative group">
-                                Modalidades
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fbd24c] transition-all group-hover:w-full"></span>
-                            </a>
-                            <a href="#conteudo" className="hover:text-[#fbd24c] transition-colors relative group">
-                                Conteúdo
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fbd24c] transition-all group-hover:w-full"></span>
-                            </a>
-                            <a href="#metodo" className="hover:text-[#fbd24c] transition-colors relative group">
-                                Método
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fbd24c] transition-all group-hover:w-full"></span>
-                            </a>
-                            <a href="#depoimentos" className="hover:text-[#fbd24c] transition-colors relative group">
-                                Depoimentos
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fbd24c] transition-all group-hover:w-full"></span>
-                            </a>
+                            <a href="#inicio" className="hover:text-[#fbd24c] transition-colors relative group">Início</a>
+                            <a href="#modalidades" className="hover:text-[#fbd24c] transition-colors relative group">Modalidades</a>
+                            <a href="#conteudo" className="hover:text-[#fbd24c] transition-colors relative group">Conteúdo</a>
+                            <a href="#metodo" className="hover:text-[#fbd24c] transition-colors relative group">Método</a>
+                            <a href="#depoimentos" className="hover:text-[#fbd24c] transition-colors relative group">Depoimentos</a>
+                            <a href="#faq" className="hover:text-[#fbd24c] transition-colors relative group">FAQ</a>
                         </div>
-
                         <button onClick={() => onOpenModal()} className="bg-[#fbd24c] text-[#0f172a] px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-yellow-400 transition-all active:scale-95 shadow-lg shadow-yellow-500/20">
                             Falar com consultor
                         </button>
@@ -223,6 +252,16 @@
             const [selectedCourse, setSelectedCourse] = useState('');
             const openModal = (course = '') => { setSelectedCourse(course); setIsModalOpen(true); };
 
+            useRevealOnScroll();
+
+            const faqs = [
+                { q: "O método Lexis serve para quem é totalmente iniciante?", a: "Absolutamente. Nossa metodologia 'Start' foca na fonética e estruturas básicas justamente para construir uma base sólida e automatizada desde o primeiro dia, evitando vícios comuns de quem tenta aprender sozinho." },
+                { q: "Qual a diferença entre a Imersão e o Maestria Online?", a: "A Imersão é um choque cultural e cognitivo de 14 dias presenciais em São Carlos-SP com 10h de prática diária. O Maestria Online adapta essa mesma neurociência para um formato digital de 8 semanas, ideal para quem precisa de flexibilidade." },
+                { q: "Realmente é possível atingir fluência em tão pouco tempo?", a: "Tratamos o inglês como uma habilidade motora e não como estudo acadêmico. Ao focar na automação cognitiva (falar sem pensar em traduzir), o tempo de resposta do cérebro diminui drasticamente, o que acelera a fluência real." },
+                { q: "Como funciona o suporte para tirar dúvidas?", a: "Oferecemos mentoria individual semanal e suporte nativo via plataforma e WhatsApp. Como nosso foco é o treinamento procedural, você sempre terá um especialista acompanhando sua evolução fonética e estrutural." },
+                { q: "Preciso de um nível mínimo de inglês para participar?", a: "Não. Temos programas que vão do zero absoluto ao nível executivo. Realizamos uma avaliação de perfil para direcionar você ao treinamento que trará o maior ROI para sua carreira." }
+            ];
+
             return (
                 <div className="flex flex-col w-full min-h-screen">
                     <Navbar onOpenModal={openModal} />
@@ -231,7 +270,7 @@
                     {/* HERO */}
                     <header id="inicio" className="relative pt-40 pb-32 px-6 overflow-hidden bg-[#0f172a]">
                         <div className="bg-mesh opacity-30"></div>
-                        <div className="max-w-6xl mx-auto text-center relative z-10">
+                        <div className="max-w-6xl mx-auto text-center relative z-10 reveal">
                             <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[1.1]">
                                 Inglês é uma <span className="text-gradient">habilidade.</span><br/>
                                 Treine como um atleta.
@@ -239,7 +278,7 @@
                             <p className="text-[#94a3b8] text-xl md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed">
                                 A Lexis English Academy transforma o aprendizado em automação cognitiva. Escolha seu caminho e alcance a fluência real em tempo recorde.
                             </p>
-                            <div className="flex flex-col md:flex-row gap-6 justify-center">
+                            <div className="flex flex-col md:flex-row gap-6 justify-center reveal reveal-delay-2">
                                 <Button primary onClick={() => openModal()}>FALAR COM UM ESPECIALISTA</Button>
                                 <Button onClick={() => document.getElementById('modalidades').scrollIntoView()}>CONHECER AS MODALIDADES</Button>
                             </div>
@@ -247,11 +286,11 @@
                         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#fbd24c]/10 rounded-full blur-[100px] animate-float"></div>
                     </header>
 
-                    {/* SEÇÃO: CIÊNCIA (REFERENCIADA COMO MÉTODO) */}
+                    {/* CIÊNCIA / MÉTODO */}
                     <section id="metodo" className="py-24 px-6 bg-slate-50 text-[#0f172a] relative overflow-hidden scroll-mt-20">
                         <div className="max-w-6xl mx-auto relative z-10">
                             <div className="grid md:grid-cols-2 gap-16 items-center">
-                                <div>
+                                <div className="reveal-left">
                                     <span className="text-[#8c5414] font-bold tracking-widest uppercase text-xs mb-4 block underline decoration-[#fbd24c] decoration-4 underline-offset-8">A Ciência por trás do Método</span>
                                     <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">Por que aprender Inglês como uma <span className="text-[#8c5414]">Habilidade</span> é o único caminho inteligente?</h2>
                                     <div className="space-y-6 text-slate-600 text-lg">
@@ -266,7 +305,7 @@
                                         { t: "Tomada de Decisão", d: "Escolha automática de estruturas para expressar ideias complexas.", i: "⚖️" },
                                         { t: "Automação Cognitiva", d: "A resposta sai antes de você 'pensar' a frase em português.", i: "🚀" }
                                     ].map((skill, idx) => (
-                                        <div key={idx} className="group bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex gap-6 items-start hover:shadow-xl hover:border-[#fbd24c]/30 transition-all duration-500">
+                                        <div key={idx} className={`group bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex gap-6 items-start hover:shadow-xl hover:border-[#fbd24c]/30 transition-all duration-500 reveal reveal-delay-${idx + 1}`}>
                                             <div className="text-3xl icon-move">{skill.i}</div>
                                             <div>
                                                 <h4 className="font-black text-[#0f172a] mb-1 group-hover:text-[#8c5414] transition-colors">{skill.t}</h4>
@@ -279,7 +318,7 @@
                         </div>
                     </section>
 
-                    {/* MODALIDADES - REFINADA */}
+                    {/* MODALIDADES */}
                     <section id="modalidades" className="py-24 px-6 bg-[#0f172a] border-t border-white/5 scroll-mt-20 relative">
                         <div className="bg-mesh opacity-10"></div>
                         <div className="max-w-7xl mx-auto relative z-10">
@@ -288,8 +327,7 @@
                                 title="Arquiteturas de Aprendizado" 
                                 subtitle="Desenvolvemos três caminhos estratégicos baseados em sua disponibilidade e urgência de resultados profissionais." 
                             />
-                            
-                            <div className="flex flex-wrap justify-center gap-3 mb-16">
+                            <div className="flex flex-wrap justify-center gap-3 mb-16 reveal">
                                 {[
                                     { id: 'maestria', label: 'Maestria Online', icon: '🌐' },
                                     { id: 'imersao', label: 'Imersão Presencial', icon: '🏫' },
@@ -305,11 +343,10 @@
                                     </button>
                                 ))}
                             </div>
-
                             <div className="min-h-[500px]">
                                 {activeTab === 'maestria' && (
                                     <div className="grid lg:grid-cols-12 gap-12 items-stretch animate-in slide-in-from-bottom-8 duration-500">
-                                        <div className="lg:col-span-7 flex flex-col justify-center">
+                                        <div className="lg:col-span-7 flex flex-col justify-center reveal-left">
                                             <div className="card-glass p-8 md:p-14 rounded-[3rem] border-l-8 border-[#fbd24c] h-full">
                                                 <div className="flex items-center gap-4 mb-6">
                                                     <span className="bg-[#fbd24c] text-[#0f172a] px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter">100% Digital</span>
@@ -317,35 +354,24 @@
                                                 </div>
                                                 <h3 className="text-4xl md:text-5xl font-black mb-8 italic tracking-tighter leading-tight">MAESTRIA ONLINE:<br/><span className="text-gradient">Automação em Casa</span></h3>
                                                 <p className="text-[#94a3b8] mb-10 text-xl font-light leading-relaxed">Nossa tecnologia exclusiva de pontes cognitivas disponível em uma plataforma de alta performance. O ambiente ideal para quem precisa de resultados rápidos com a flexibilidade do digital.</p>
-                                                
                                                 <div className="grid md:grid-cols-2 gap-6 mb-12">
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#fbd24c] border border-white/10">✓</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Treino de Fonética Assistida</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#fbd24c] border border-white/10">✓</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Expansão de Vocabulário Ativa</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#fbd24c] border border-white/10">✓</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Mentoria Individual Semanal</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#fbd24c] border border-white/10">✓</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Suporte Nativo 24/7</p>
-                                                    </div>
+                                                    {["Treino de Fonética Assistida", "Expansão de Vocabulário Ativa", "Mentoria Individual Semanal", "Suporte Nativo 24/7"].map(i => (
+                                                        <div key={i} className="flex items-start gap-4">
+                                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#fbd24c] border border-white/10">✓</div>
+                                                            <p className="text-sm text-white/80 font-bold uppercase tracking-widest">{i}</p>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                                 <Button primary className="w-full text-sm py-6" onClick={() => openModal('Maestria Online')}>SOLICITAR ACESSO À MAESTRIA</Button>
                                             </div>
                                         </div>
                                         <div className="lg:col-span-5 flex flex-col gap-6">
-                                            <div className="bg-gradient-to-br from-white/10 to-transparent p-10 rounded-[3rem] border border-white/10 flex-1 flex flex-col justify-center">
+                                            <div className="bg-gradient-to-br from-white/10 to-transparent p-10 rounded-[3rem] border border-white/10 flex-1 flex flex-col justify-center reveal reveal-delay-1">
                                                 <div className="text-4xl mb-6">⚡</div>
                                                 <h4 className="text-xl font-black mb-4 uppercase italic">Vantagem Digital</h4>
                                                 <p className="text-[#94a3b8] text-sm leading-relaxed">Treine nos mesmos moldes dos nossos cursos presenciais, utilizando a neurociência para hackear o tempo de aprendizado tradicional.</p>
                                             </div>
-                                            <div className="bg-[#fbd24c]/5 p-10 rounded-[3rem] border border-[#fbd24c]/20 flex-1 flex flex-col justify-center">
+                                            <div className="bg-[#fbd24c]/5 p-10 rounded-[3rem] border border-[#fbd24c]/20 flex-1 flex flex-col justify-center reveal reveal-delay-2">
                                                 <div className="text-4xl mb-6">🏆</div>
                                                 <h4 className="text-xl font-black mb-4 uppercase italic text-[#fbd24c]">Selo de Eficácia</h4>
                                                 <p className="text-[#94a3b8] text-sm leading-relaxed">Garantia Lexis de evolução auditiva e fala fluida em até 60 dias úteis de treinamento contínuo.</p>
@@ -355,7 +381,7 @@
                                 )}
                                 {activeTab === 'imersao' && (
                                     <div className="grid lg:grid-cols-12 gap-12 items-stretch animate-in slide-in-from-bottom-8 duration-500">
-                                        <div className="lg:col-span-7 flex flex-col justify-center">
+                                        <div className="lg:col-span-7 flex flex-col justify-center reveal-left">
                                             <div className="card-glass p-8 md:p-14 rounded-[3rem] border-l-8 border-red-500 h-full relative overflow-hidden">
                                                 <div className="absolute -right-8 -top-8 w-32 h-32 bg-red-500/10 blur-3xl"></div>
                                                 <div className="flex items-center gap-4 mb-6">
@@ -364,35 +390,24 @@
                                                 </div>
                                                 <h3 className="text-4xl md:text-5xl font-black mb-8 italic tracking-tighter leading-tight">IMERSÃO TOTAL:<br/><span className="text-gradient">O Ponto de Virada</span></h3>
                                                 <p className="text-[#94a3b8] mb-10 text-xl font-light leading-relaxed">Em São Carlos-SP, você vivencia o inglês como sua única língua. 10 horas diárias de prática dirigida para quebrar qualquer barreira de fala e compreensão.</p>
-                                                
                                                 <div className="grid md:grid-cols-2 gap-6 mb-12">
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20 italic font-black">!</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Vivência Real 24h</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20 italic font-black">!</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Foco em Inglês de Negócios</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20 italic font-black">!</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Feedback Instantâneo</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20 italic font-black">!</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Rede Executiva de Alunos</p>
-                                                    </div>
+                                                    {["Vivência Real 24h", "Foco em Inglês de Negócios", "Feedback Instantâneo", "Rede Executiva de Alunos"].map(i => (
+                                                        <div key={i} className="flex items-start gap-4">
+                                                            <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20 italic font-black">!</div>
+                                                            <p className="text-sm text-white/80 font-bold uppercase tracking-widest">{i}</p>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                                 <Button primary className="w-full text-sm py-6 bg-red-500 hover:bg-red-600 border-red-500" onClick={() => openModal('Imersão Presencial')}>RESERVAR MINHA IMERSÃO</Button>
                                             </div>
                                         </div>
                                         <div className="lg:col-span-5 flex flex-col gap-6">
-                                            <div className="bg-red-500/5 p-10 rounded-[3rem] border border-red-500/20 flex-1 flex flex-col justify-center">
+                                            <div className="bg-red-500/5 p-10 rounded-[3rem] border border-red-500/20 flex-1 flex flex-col justify-center reveal reveal-delay-1">
                                                 <div className="text-4xl mb-6">🏢</div>
                                                 <h4 className="text-xl font-black mb-4 uppercase italic text-red-500">Localização Estratégica</h4>
                                                 <p className="text-[#94a3b8] text-sm leading-relaxed">Unidade própria em São Carlos-SP, desenhada para total isolamento linguístico e conforto profissional.</p>
                                             </div>
-                                            <div className="bg-white/5 p-10 rounded-[3rem] border border-white/10 flex-1 flex flex-col justify-center">
+                                            <div className="bg-white/5 p-10 rounded-[3rem] border border-white/10 flex-1 flex flex-col justify-center reveal reveal-delay-2">
                                                 <div className="text-4xl mb-6">📅</div>
                                                 <h4 className="text-xl font-black mb-4 uppercase italic">Vagas Escassas</h4>
                                                 <p className="text-[#94a3b8] text-sm leading-relaxed">Grupos ultra reduzidos para garantir que cada minuto de treinamento seja focado na sua evolução individual.</p>
@@ -402,7 +417,7 @@
                                 )}
                                 {activeTab === 'theway' && (
                                     <div className="grid lg:grid-cols-12 gap-12 items-stretch animate-in slide-in-from-bottom-8 duration-500">
-                                        <div className="lg:col-span-7 flex flex-col justify-center">
+                                        <div className="lg:col-span-7 flex flex-col justify-center reveal-left">
                                             <div className="card-glass p-8 md:p-14 rounded-[3rem] border-l-8 border-blue-500 h-full">
                                                 <div className="flex items-center gap-4 mb-6">
                                                     <span className="bg-blue-500 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter">Flexibilidade Total</span>
@@ -410,35 +425,24 @@
                                                 </div>
                                                 <h3 className="text-4xl md:text-5xl font-black mb-8 italic tracking-tighter leading-tight">THE WAY:<br/><span className="text-gradient">O Fluxo Contínuo</span></h3>
                                                 <p className="text-[#94a3b8] mb-10 text-xl font-light leading-relaxed">Uma arquitetura de ensino cíclica que respeita seu tempo. Avance em espiral por todas as competências do idioma sem depender de calendários fixos.</p>
-                                                
                                                 <div className="grid md:grid-cols-2 gap-6 mb-12">
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">↺</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Aprendizado Adaptativo</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">↺</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Grade Semanal Flexível</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">↺</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Material Digital Incluído</p>
-                                                    </div>
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">↺</div>
-                                                        <p className="text-sm text-white/80 font-bold uppercase tracking-widest">Início em Qualquer Módulo</p>
-                                                    </div>
+                                                    {["Aprendizado Adaptativo", "Grade Semanal Flexível", "Material Digital Incluído", "Início em Qualquer Módulo"].map(i => (
+                                                        <div key={i} className="flex items-start gap-4">
+                                                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">↺</div>
+                                                            <p className="text-sm text-white/80 font-bold uppercase tracking-widest">{i}</p>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                                 <Button primary className="w-full text-sm py-6 bg-blue-500 hover:bg-blue-600 border-blue-500" onClick={() => openModal('The Way Cíclico')}>ENTRAR NO FLUXO (THE WAY)</Button>
                                             </div>
                                         </div>
                                         <div className="lg:col-span-5 flex flex-col gap-6">
-                                            <div className="bg-blue-500/5 p-10 rounded-[3rem] border border-blue-500/20 flex-1 flex flex-col justify-center">
+                                            <div className="bg-blue-500/5 p-10 rounded-[3rem] border border-blue-500/20 flex-1 flex flex-col justify-center reveal reveal-delay-1">
                                                 <div className="text-4xl mb-6">🌀</div>
                                                 <h4 className="text-xl font-black mb-4 uppercase italic text-blue-500">Modelo Espiral</h4>
                                                 <p className="text-[#94a3b8] text-sm leading-relaxed">Os conteúdos se revisitam e se aprofundam a cada ciclo, garantindo que nada seja esquecido.</p>
                                             </div>
-                                            <div className="bg-white/5 p-10 rounded-[3rem] border border-white/10 flex-1 flex flex-col justify-center">
+                                            <div className="bg-white/5 p-10 rounded-[3rem] border border-white/10 flex-1 flex flex-col justify-center reveal reveal-delay-2">
                                                 <div className="text-4xl mb-6">⏰</div>
                                                 <h4 className="text-xl font-black mb-4 uppercase italic">Tempo Otimizado</h4>
                                                 <p className="text-[#94a3b8] text-sm leading-relaxed">Foco exclusivo no que você precisa para se comunicar. Sem perda de tempo com gramática irrelevante.</p>
@@ -450,7 +454,7 @@
                         </div>
                     </section>
 
-                    {/* CONTEÚDO METODOLÓGICO */}
+                    {/* CONTEÚDO */}
                     <section id="conteudo" className="py-24 px-6 bg-white text-[#0f172a] scroll-mt-20 relative">
                         <div className="max-w-7xl mx-auto">
                             <SectionHeader tag="Estrutura de Ensino" title="O Caminho para a Fluência" subtitle="Nossa metodologia cíclica foi desenvolvida para garantir que você avance de forma sólida." />
@@ -461,7 +465,7 @@
                                     { m: "Módulo 3", t: "Fly", s: "Vocabulário", d: "Expansão com foco nas 700 palavras mais usadas.", c: "from-green-500/10" },
                                     { m: "Módulo 4", t: "Liberty", s: "Conversação", d: "Fluência e compreensão auditiva acima de 70%.", c: "from-purple-500/10" }
                                 ].map((mod, i) => (
-                                    <div key={i} className={`module-card p-8 rounded-3xl bg-slate-50 flex flex-col h-full bg-gradient-to-br ${mod.c} to-transparent border border-slate-100 group`}>
+                                    <div key={i} className={`module-card p-8 rounded-3xl bg-slate-50 flex flex-col h-full bg-gradient-to-br ${mod.c} to-transparent border border-slate-100 group reveal reveal-delay-${i+1}`}>
                                         <span className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 group-hover:text-[#8c5414] transition-colors">{mod.m}</span>
                                         <h4 className="text-3xl font-black text-[#0f172a] mb-1 group-hover:scale-110 origin-left transition-transform">{mod.t}</h4>
                                         <span className="text-[#8c5414] font-bold text-sm mb-6 uppercase tracking-wider">{mod.s}</span>
@@ -485,7 +489,7 @@
                                     { n: "Fernando V.", j: "CEO & Founder", d: "Para quem tem pressa e precisa de resultados executivos, não existe nada igual. A imersão em São Carlos mudou meu patamar profissional." },
                                     { n: "Carla T.", j: "Especialista em TI", d: "O foco na neurociência e na automação procedural faz toda a diferença. Finalmente parei de gaguejar e comecei a falar com confiança." }
                                 ].map((test, i) => (
-                                    <div key={i} className="card-glass p-8 rounded-3xl relative overflow-hidden group hover:border-[#fbd24c]/50 transition-all duration-500">
+                                    <div key={i} className={`card-glass p-8 rounded-3xl relative overflow-hidden group hover:border-[#fbd24c]/50 transition-all duration-500 reveal reveal-delay-${(i % 3) + 1}`}>
                                         <div className="text-[#fbd24c] text-3xl mb-4">"</div>
                                         <p className="text-[#94a3b8] mb-8 leading-relaxed italic">{test.d}</p>
                                         <div className="mt-auto border-t border-white/10 pt-6 flex justify-between items-center">
@@ -500,9 +504,25 @@
                         </div>
                     </section>
 
+                    {/* FAQ SECTION */}
+                    <section id="faq" className="py-24 px-6 bg-[#0f172a] border-t border-white/5 scroll-mt-20">
+                        <div className="max-w-4xl mx-auto">
+                            <SectionHeader 
+                                tag="Dúvidas Frequentes" 
+                                title="Perguntas Comuns" 
+                                subtitle="Tudo o que você precisa saber para tomar a decisão que vai mudar sua carreira." 
+                            />
+                            <div className="space-y-4">
+                                {faqs.map((faq, idx) => (
+                                    <FAQItem key={idx} index={idx} question={faq.q} answer={faq.a} />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
                     {/* CTA FINAL */}
                     <section className="py-24 px-6 bg-[#0f172a] text-white text-center relative overflow-hidden">
-                        <div className="max-w-3xl mx-auto relative z-10">
+                        <div className="max-w-3xl mx-auto relative z-10 reveal">
                             <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight">Pare de adiar o seu <span className="text-gradient">sucesso global.</span></h2>
                             <Button primary className="text-2xl py-6 px-12 scale-110 hover:scale-125 transition-transform" onClick={() => openModal()}>RECEBER ORIENTAÇÃO PERSONALIZADA</Button>
                         </div>
@@ -511,16 +531,16 @@
                     {/* FOOTER */}
                     <footer className="py-12 px-6 bg-slate-900 text-[#94a3b8] border-t border-white/5">
                         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12 text-sm">
-                            <div className="text-center md:text-left group">
-                                <h5 className="text-white font-black mb-4">LEXIS ENGLISH ACADEMY</h5>
+                            <div className="text-center md:text-left group reveal-left">
+                                <h5 className="text-white font-black mb-4 uppercase">LEXIS ENGLISH ACADEMY</h5>
                                 <p>Rua Visconde de Inhaúma, 1295<br/>São Carlos-SP</p>
                             </div>
-                            <div className="text-center">
+                            <div className="text-center reveal">
                                 <h5 className="text-white font-black mb-4 uppercase">Garantias</h5>
                                 <p>Garantia Vitalícia Lexis</p>
                                 <p>Reembolso de Adaptação</p>
                             </div>
-                            <div className="text-center md:text-right">
+                            <div className="text-center md:text-right reveal">
                                 <p className="opacity-30 text-xs">CNPJ: 38.229.678/0001-13</p>
                                 <p className="mt-2 italic">© 2025 Lexis Academy.</p>
                             </div>
