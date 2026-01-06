@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lexis English Academy | Treinamento de Alta Performace</title>
+    <title>Lexis English Academy | Maestria, Imersão e The Way</title>
     <meta name="description" content="Domine o inglês com a metodologia Lexis. Cursos Intensivos Online, Imersão Presencial de 2 semanas e o inovador modelo Cíclico The Way. Resultados reais e rápidos.">
     
     <!-- Favicon -->
@@ -42,6 +42,8 @@
                         'float': 'float 6s ease-in-out infinite',
                         'float-slow': 'float-slow 8s ease-in-out infinite',
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'modal-in': 'modal-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'overlay-in': 'overlay-in 0.4s ease-out forwards',
                     },
                     keyframes: {
                         'gradient-x': {
@@ -55,6 +57,14 @@
                         'float-slow': {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-12px)' },
+                        },
+                        'modal-in': {
+                            '0%': { opacity: '0', transform: 'scale(0.95) translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+                        },
+                        'overlay-in': {
+                            '0%': { opacity: '0', backdropFilter: 'blur(0px)' },
+                            '100%': { opacity: '1', backdropFilter: 'blur(8px)' },
                         }
                     }
                 }
@@ -86,7 +96,7 @@
         .icon-move { display: inline-block; transition: transform 0.3s ease; }
         .group:hover .icon-move { transform: scale(1.2) rotate(10deg); }
         .bg-mesh { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(251, 210, 76, 0.05) 1px, transparent 0); background-size: 40px 40px; }
-        .modal-overlay { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); }
+        .modal-overlay { background: rgba(15, 23, 42, 0.85); }
 
         .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
@@ -166,14 +176,26 @@
         };
 
         const LeadModal = ({ isOpen, onClose, defaultCourse = "" }) => {
+            const [isVisible, setIsVisible] = useState(false);
             const [formData, setFormData] = useState({ name: '', email: '', phone: '', course: defaultCourse });
             const [isSubmitting, setIsSubmitting] = useState(false);
             
             useEffect(() => {
-                if (isOpen) setFormData(prev => ({ ...prev, course: defaultCourse }));
+                if (isOpen) {
+                    setIsVisible(true);
+                    setFormData(prev => ({ ...prev, course: defaultCourse }));
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = 'auto';
+                }
             }, [isOpen, defaultCourse]);
 
-            if (!isOpen) return null;
+            if (!isOpen && !isVisible) return null;
+
+            const handleClose = () => {
+                setIsVisible(false);
+                setTimeout(onClose, 400); 
+            };
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
@@ -185,15 +207,18 @@
                 setTimeout(() => {
                     window.open(`https://wa.me/${selectedNumber}?text=${encodedMessage}`, '_blank');
                     setIsSubmitting(false);
-                    onClose();
+                    handleClose();
                 }, 800);
             };
 
             return (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 modal-overlay animate-in fade-in duration-300">
-                    <div className="bg-[#0f172a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 relative shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto text-white text-center">
+                <div className={`fixed inset-0 z-[200] flex items-center justify-center p-4 modal-overlay transition-opacity duration-400 ${isVisible ? 'animate-overlay-in' : 'opacity-0 pointer-events-none'}`}>
+                    <div 
+                        className={`bg-[#0f172a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 relative shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto text-white text-center transform transition-all duration-500 ${isVisible ? 'animate-modal-in' : 'scale-95 opacity-0 translate-y-4'}`}
+                        onClick={e => e.stopPropagation()}
+                    >
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#fbd24c] to-[#f59e0b]"></div>
-                        <button onClick={onClose} className="absolute top-6 right-6 text-white/40 hover:text-[#fbd24c] transition-colors">
+                        <button onClick={handleClose} className="absolute top-6 right-6 text-white/40 hover:text-[#fbd24c] transition-colors">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                         <div className="mb-8">
@@ -207,15 +232,15 @@
                         <form onSubmit={handleSubmit} className="space-y-4 text-left">
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#fbd24c] mb-1.5">Nome Completo</label>
-                                <input required type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors font-medium" placeholder="Ex: João Silva" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                                <input required type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors font-medium placeholder-white/20" placeholder="Ex: João Silva" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#fbd24c] mb-1.5">E-mail</label>
-                                <input required type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors font-medium" placeholder="Ex: joao@email.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                                <input required type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors font-medium placeholder-white/20" placeholder="Ex: joao@email.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#fbd24c] mb-1.5">WhatsApp</label>
-                                <input required type="tel" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors font-medium" placeholder="(00) 00000-0000" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                                <input required type="tel" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors font-medium placeholder-white/20" placeholder="(00) 00000-0000" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#fbd24c] mb-1.5">Escolha seu Caminho</label>
@@ -264,13 +289,12 @@
                     <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
                         <div className="flex items-center gap-3 group cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
                             <img src="logo.png" alt="Lexis Logo" className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform duration-300" />
-                            <span className="font-extrabold text-lg tracking-tighter hidden md:block group-hover:text-[#fbd24c] transition-colors uppercase">Lexis Academy</span>
+                            <span className="font-extrabold text-lg tracking-tighter hidden md:block group-hover:text-[#fbd24c] transition-colors uppercase text-white">Lexis Academy</span>
                         </div>
                         <div className="hidden md:flex items-center gap-8 text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#94a3b8]">
                             <a href="#inicio" className="hover:text-[#fbd24c] transition-colors relative group">Início</a>
-                            <a href="#modalidades" className="hover:text-[#fbd24c] transition-colors relative group">Modalidades</a>
-                            <a href="#conteudo" className="hover:text-[#fbd24c] transition-colors relative group">Conteúdo</a>
                             <a href="#metodo" className="hover:text-[#fbd24c] transition-colors relative group">Método</a>
+                            <a href="#modalidades" className="hover:text-[#fbd24c] transition-colors relative group">Modalidades</a>
                             <a href="#depoimentos" className="hover:text-[#fbd24c] transition-colors relative group">Depoimentos</a>
                             <a href="#faq" className="hover:text-[#fbd24c] transition-colors relative group">FAQ</a>
                         </div>
@@ -306,51 +330,98 @@
                     <header id="inicio" className="relative pt-48 pb-40 px-6 overflow-hidden bg-[#0f172a]">
                         <div className="bg-mesh opacity-30"></div>
                         <div className="max-w-6xl mx-auto text-center relative z-10 reveal">
-                            {/* Tipografia Refinada para Máxima Legibilidade e Impacto */}
                             <div className="animate-float-in">
                                 <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold mb-8 leading-[1.1] tracking-tight text-white uppercase">
-                                    Inglês é uma <span className="text-gradient italic font-black">habilidade.</span><br/>
-                                    Treine como <span className="text-white/90">um atleta.</span>
+                                    Inglês é uma habilidade. <br/> Treine como <span className="text-gradient italic font-black">um atleta.</span>
                                 </h1>
                             </div>
                             <p className="text-[#94a3b8] text-lg md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium">
-                                A Lexis Academy transforma o aprendizado passivo em automação cognitiva de alto desempenho. Escolha sua modalidade e atinja a fluência real.
+                                A Lexis Academy substitui o "estudar" pelo "treinar". Transformamos o aprendizado passivo em automação cognitiva de alto desempenho.
                             </p>
                             <div className="flex flex-col md:flex-row gap-6 justify-center reveal reveal-delay-2 animate-float-in" style={{ animationDelay: '0.5s' }}>
                                 <Button primary onClick={() => openModal()}>Falar com um especialista</Button>
-                                <Button onClick={() => document.getElementById('modalidades').scrollIntoView()}>Conhecer modalidades</Button>
+                                <Button onClick={() => document.getElementById('metodo').scrollIntoView({behavior: 'smooth'})}>Entender a Ciência</Button>
                             </div>
                         </div>
                         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#fbd24c]/10 rounded-full blur-[100px] animate-float"></div>
                     </header>
 
-                    {/* CIÊNCIA / MÉTODO */}
+                    {/* SEÇÃO MÉTODO REFORMULADA */}
                     <section id="metodo" className="py-32 px-6 bg-slate-50 text-[#0f172a] relative overflow-hidden scroll-mt-20">
                         <div className="max-w-6xl mx-auto relative z-10">
-                            <div className="grid md:grid-cols-2 gap-20 items-center">
+                            <div className="grid md:grid-cols-2 gap-20 items-center mb-32">
                                 <div className="reveal-left">
-                                    <span className="text-[#8c5414] font-extrabold tracking-[0.25em] uppercase text-[11px] mb-5 block underline decoration-[#fbd24c] decoration-4 underline-offset-8">A Ciência do Método</span>
-                                    <h2 className="text-4xl md:text-5xl font-black mb-10 leading-tight tracking-tight">Por que aprender Inglês como uma <span className="text-[#8c5414] italic">Habilidade</span> é o caminho inteligente?</h2>
-                                    <div className="space-y-8 text-slate-600 text-lg font-medium">
-                                        <p>Idiomas não são conteúdos para "estudar". Eles residem na área do cérebro que controla <strong>habilidades motoras e esportes.</strong></p>
-                                        <p>Saber gramática não faz ninguém falar, do mesmo jeito que ler sobre natação não faz ninguém nadar.</p>
+                                    <span className="text-[#8c5414] font-extrabold tracking-[0.25em] uppercase text-[11px] mb-5 block underline decoration-[#fbd24c] decoration-4 underline-offset-8">A Filosofia Lexis</span>
+                                    <h2 className="text-4xl md:text-5xl font-black mb-10 leading-tight tracking-tight">Idioma não se aprende, <br/><span className="text-[#8c5414] italic">se treina.</span></h2>
+                                    <div className="space-y-6 text-slate-600 text-lg font-medium">
+                                        <p>Saber regras gramaticais ou teorias linguísticas não faz ninguém falar inglês, assim como:</p>
+                                        <ul className="space-y-4">
+                                            <li className="flex items-center gap-3">
+                                                <span className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">✕</span>
+                                                Ler sobre natação não faz alguém nadar.
+                                            </li>
+                                            <li className="flex items-center gap-3">
+                                                <span className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">✕</span>
+                                                Estudar teoria musical não faz tocar instrumento.
+                                            </li>
+                                            <li className="flex items-center gap-3">
+                                                <span className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">✕</span>
+                                                Conhecer regras do futebol não faz jogar bem.
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-1 gap-5">
-                                    {[
-                                        { t: "Processamento Real-Time", d: "Coordenação instantânea entre audição e resposta, sem travas cognitivas.", i: "🧠" },
-                                        { t: "Coordenação Fônica", d: "Treino muscular específico para uma fonética natural e clara.", i: "🗣️" },
-                                        { t: "Tomada de Decisão", d: "Escolha automática de estruturas para expressar ideias complexas.", i: "⚖️" },
-                                        { t: "Automação Cognitiva", d: "A fluência surge quando você para de traduzir mentalmente.", i: "🚀" }
-                                    ].map((skill, idx) => (
-                                        <div key={idx} className={`group bg-white p-7 rounded-3xl border border-slate-200 shadow-sm flex gap-6 items-start hover:shadow-xl hover:border-[#fbd24c]/40 transition-all duration-500 reveal reveal-delay-${idx + 1}`}>
-                                            <div className="text-3xl icon-move shrink-0">{skill.i}</div>
-                                            <div>
-                                                <h4 className="font-extrabold text-[#0f172a] text-lg mb-2 group-hover:text-[#8c5414] transition-colors">{skill.t}</h4>
-                                                <p className="text-sm text-slate-500 font-medium leading-relaxed">{skill.d}</p>
+                                <div className="bg-[#0f172a] p-10 rounded-[3rem] text-white shadow-2xl reveal">
+                                    <h3 className="text-2xl font-black mb-8 border-l-4 border-[#fbd24c] pl-6 uppercase tracking-tight">O Inglês como <br/>Esporte Cognitivo</h3>
+                                    <p className="text-[#94a3b8] mb-8 font-medium">Falar um novo idioma exige o que chamamos de <strong>automação cognitiva</strong>. Para fluência real, o cérebro deve realizar:</p>
+                                    <div className="space-y-6">
+                                        {[
+                                            { t: "Processamento Real-Time", d: "Coordenação instantânea entre audição e resposta." },
+                                            { t: "Tomada de Decisão Ágil", d: "Escolha automática de estruturas em tempo real." },
+                                            { t: "Automação Procedural", d: "Responder sem reflexão consciente ou tradução." }
+                                        ].map((skill, idx) => (
+                                            <div key={idx} className="flex gap-4">
+                                                <div className="text-[#fbd24c] text-xl font-black">0{idx+1}</div>
+                                                <div>
+                                                    <h4 className="font-extrabold text-[#fbd24c] text-sm uppercase tracking-widest mb-1">{skill.t}</h4>
+                                                    <p className="text-xs text-[#94a3b8] leading-relaxed">{skill.d}</p>
+                                                </div>
                                             </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-10 p-6 bg-white/5 rounded-2xl border border-white/10 italic text-sm text-[#94a3b8]">
+                                        "Quando o aluno tenta pensar na frase antes de falar, ele trava. Quando ele treina a fala, a resposta sai automática."
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* SEÇÃO: POR QUE A CIÊNCIA PROVA ISSO */}
+                            <div className="reveal">
+                                <div className="text-center mb-16">
+                                    <h3 className="text-3xl md:text-4xl font-black mb-6">Por que tratar o Inglês como <br/><span className="text-[#8c5414]">Habilidade</span> acelera seu resultado?</h3>
+                                    <p className="text-slate-500 max-w-2xl mx-auto font-medium">O estudo passivo é o caminho mais lento. O treinamento orientado foca onde a fluência realmente acontece: na biologia do seu cérebro.</p>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-10">
+                                    <div className="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col h-full group hover:border-[#fbd24c] transition-colors">
+                                        <div className="text-3xl mb-6">🧠</div>
+                                        <h4 className="text-xl font-black mb-4 text-[#0f172a] uppercase tracking-tight">1. Aquisição ≠ Aprendizagem</h4>
+                                        <p className="text-slate-600 text-sm mb-6 leading-relaxed">Stephen Krashen, mestre em linguística, demonstra: aprender regras conscientemente <strong>não gera fluência</strong>. O cérebro só acessa padrões que foram adquiridos pelo uso real e contextualizado.</p>
+                                        <div className="mt-auto pt-6 border-t border-slate-100 flex items-center gap-3">
+                                            <span className="w-2 h-2 rounded-full bg-[#fbd24c]"></span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Conversação Autônoma</span>
                                         </div>
-                                    ))}
+                                    </div>
+
+                                    <div className="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col h-full group hover:border-[#fbd24c] transition-colors">
+                                        <div className="text-3xl mb-6">⚡</div>
+                                        <h4 className="text-xl font-black mb-4 text-[#0f172a] uppercase tracking-tight">2. Memória Procedural</h4>
+                                        <p className="text-slate-600 text-sm mb-6 leading-relaxed">Conhecimento teórico fica na memória declarativa (decoreba). Habilidades ficam na memória procedural. Você não "lembra" como andar de bicicleta; você <strong>executa</strong>. A Lexis treina sua execução.</p>
+                                        <div className="mt-auto pt-6 border-t border-slate-100 flex items-center gap-3">
+                                            <span className="w-2 h-2 rounded-full bg-[#fbd24c]"></span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ação sem Tradução</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -384,7 +455,7 @@
                                             </div>
                                         </div>
                                         <h3 className="text-3xl font-black mb-4 uppercase tracking-tight text-white group-hover:text-amber-400 transition-colors leading-none">Maestria<br/><span className="text-amber-400/80">Online</span></h3>
-                                        <p className="text-slate-400 text-sm font-medium mb-8 leading-relaxed">Flexibilidade radical com rigor de elite. Metodologia acelerada via Aula Invertida e Repetição Espaçada.</p>
+                                        <p className="text-slate-400 text-sm font-medium mb-8 leading-relaxed">Metodologia acelerada via Aula Invertida e Repetição Espaçada aplicada ao digital.</p>
                                         
                                         <div className="space-y-4 mb-10 flex-grow">
                                             {[
@@ -428,7 +499,7 @@
                                             </div>
                                         </div>
                                         <h3 className="text-3xl font-black mb-4 uppercase tracking-tight text-white group-hover:text-lexisPurple transition-colors leading-none">Imersão<br/><span className="text-lexisPurple/80">Lexis</span></h3>
-                                        <p className="text-slate-400 text-sm font-medium mb-8 leading-relaxed">Reset linguístico em São Carlos-SP. 10h/dia de imersão total para atingir fluência funcional em tempo recorde.</p>
+                                        <p className="text-slate-400 text-sm font-medium mb-8 leading-relaxed">Shock cognitivo de 14 dias presenciais em São Carlos-SP com 10h de prática diária.</p>
                                         
                                         <div className="space-y-4 mb-10 flex-grow">
                                             {[
@@ -502,43 +573,21 @@
                         </div>
                     </section>
 
-                    {/* CONTEÚDO METODOLÓGICO */}
-                    <section id="conteudo" className="py-32 px-6 bg-white text-[#0f172a] scroll-mt-20 relative">
-                        <div className="max-w-7xl mx-auto">
-                            <SectionHeader tag="Mastery Roadmap" title="O Caminho da Fluência" subtitle="Nossa jornada cíclica foi desenhada para garantir evolução sólida e segurança na fala." />
-                            <div className="grid md:grid-cols-4 gap-6">
-                                {[
-                                    { m: "Módulo 1", t: "Start", s: "Fonética", d: "Correção de vícios auditivos e fonéticos primários através de técnicas de coordenação motora.", c: "from-[#fbd24c]/20" },
-                                    { m: "Módulo 2", t: "Run", s: "Estruturas", d: "Domínio intensivo de blocos lógicos motoras e conectivos para fala fluida.", c: "from-blue-500/10" },
-                                    { m: "Módulo 3", t: "Fly", s: "Vocabulário", d: "Expansão ativa focada nas 700 palavras mais usadas no mercado de trabalho.", c: "from-green-500/10" },
-                                    { m: "Módulo 4", t: "Liberty", s: "Conversação", d: "Automação cognitiva total com compreensão auditiva acima de 70% em situações reais.", c: "from-purple-500/10" }
-                                ].map((mod, i) => (
-                                    <div key={i} className={`module-card p-10 rounded-[2.5rem] bg-slate-50 flex flex-col h-full bg-gradient-to-br ${mod.c} to-transparent border border-slate-100 group reveal reveal-delay-${i+1}`}>
-                                        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3 group-hover:text-[#8c5414] transition-colors">{mod.m}</span>
-                                        <h4 className="text-3xl font-black text-[#0f172a] mb-2 group-hover:scale-110 origin-left transition-transform uppercase tracking-tight">{mod.t}</h4>
-                                        <span className="text-[#8c5414] font-extrabold text-xs mb-8 uppercase tracking-widest">{mod.s}</span>
-                                        <p className="text-slate-500 text-sm font-medium leading-relaxed">{mod.d}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
                     {/* DEPOIMENTOS */}
                     <section id="depoimentos" className="py-32 px-6 bg-[#0f172a] scroll-mt-20">
                         <div className="max-w-7xl mx-auto">
                             <SectionHeader tag="Evolução Validada" title="O que dizem os alunos" subtitle="Profissionais que saíram da teoria para a segurança prática através do treino Lexis." />
                             <div className="grid md:grid-cols-3 gap-8">
                                 {[
-                                    { n: "Ricardo M.", j: "Diretor Comercial", d: "Tentei 4 escolas e nunca saí do zero. Com a Imersão Lexis, destravei reuniões internacionais em 2 semanas." },
-                                    { n: "Ana Clara F.", j: "Arquiteta", d: "O método cíclico foi o único que se adaptou à minha agenda. A fluência veio naturalmente sem pressão." },
-                                    { n: "Gustavo S.", j: "Desenvolvedor Sr.", d: "Parei de traduzir mentalmente. As frases começaram a sair naturais em menos de 2 meses no Maestria." },
-                                    { n: "Mariana L.", j: "Gerente de Projetos", d: "A velocidade da evolução é assustadora. No treino Lexis você adquire a habilidade através da prática correta." },
-                                    { n: "Fernando V.", j: "CEO & Founder", d: "Para quem tem pressa e precisa de resultados corporativos, não existe nada igual. A Lexis mudou meu patamar." },
-                                    { n: "Carla T.", j: "Especialista em TI", d: "O foco na neurociência e na automação procedural faz toda a diferença. Finalmente comecei a falar com confiança." }
+                                    { n: "Ricardo M.", j: "Diretor Comercial", d: "Tentei 4 escolas e nunca saí do zero. Com a Imersão Lexis, em 14 dias destravei reuniões internacionais." },
+                                    { n: "Ana Clara F.", j: "Arquiteta", d: "Finalmente entendi que inglês é treino muscular e não estudo de gramática. Fluência veio sem pressão." },
+                                    { n: "Gustavo S.", j: "Dev Sr.", d: "Parei de traduzir mentalmente. As frases começaram a sair naturais em menos de 2 meses no Maestria." },
+                                    { n: "Marcelo P.", j: "Gerente de Logística", d: "A abordagem Lexis é disruptiva. Pela primeira vez senti que estava usando o inglês em vez de apenas preencher lacunas de exercícios." },
+                                    { n: "Bárbara S.", j: "Engenheira de Dados", d: "O suporte dos mentores é o grande diferencial. Eles corrigem sua fonética em tempo real, evitando vícios que escolas comuns ignoram." },
+                                    { n: "Juliana K.", j: "Consultora Financeira", d: "A Imersão Lexis mudou minha vida profissional. Em 2 semanas adquiri a confiança que anos de cursinho tradicional não me deram." }
                                 ].map((test, i) => (
                                     <div key={i} className={`card-glass p-10 rounded-[2.5rem] relative overflow-hidden group hover:border-[#fbd24c]/50 transition-all duration-500 reveal reveal-delay-${(i % 3) + 1}`}>
-                                        <div className="text-[#fbd24c] text-3xl mb-6">"</div>
+                                        <div className="text-[#fbd24c] text-3xl mb-6 font-serif">"</div>
                                         <p className="text-[#94a3b8] mb-10 leading-relaxed font-medium italic">{test.d}</p>
                                         <div className="mt-auto border-t border-white/10 pt-8 flex justify-between items-center">
                                             <div>
@@ -580,17 +629,17 @@
                     <footer className="py-20 px-6 bg-[#020617] text-[#94a3b8] border-t border-white/5">
                         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-16 text-sm text-[#94a3b8]">
                             <div className="text-center md:text-left group reveal-left">
-                                <h5 className="text-white font-black mb-6 uppercase tracking-widest text-white">LEXIS ACADEMY</h5>
-                                <p className="font-medium text-[#94a3b8]">Rua Visconde de Inhaúma, 1295<br/>São Carlos-SP</p>
+                                <h5 className="text-white font-black mb-6 uppercase tracking-widest">LEXIS ACADEMY</h5>
+                                <p className="font-medium">Rua Visconde de Inhaúma, 1295<br/>São Carlos-SP</p>
                             </div>
                             <div className="text-center reveal">
-                                <h5 className="text-white font-black mb-6 uppercase tracking-widest text-white">Diferenciais</h5>
-                                <p className="font-medium text-[#94a3b8]">Selo de Garantia Vitalícia</p>
-                                <p className="font-medium text-[#94a3b8]">Metodologia Neuro-Acelerada</p>
+                                <h5 className="text-white font-black mb-6 uppercase tracking-widest">Diferenciais</h5>
+                                <p className="font-medium">Selo de Garantia Vitalícia</p>
+                                <p className="font-medium">Metodologia Neuro-Acelerada</p>
                             </div>
                             <div className="text-center md:text-right reveal">
-                                <p className="opacity-30 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">CNPJ: 38.229.678/0001-13</p>
-                                <p className="mt-3 font-extrabold italic text-white/50 tracking-widest text-white">© 2025 Lexis Academy.</p>
+                                <p className="opacity-30 text-xs font-bold uppercase tracking-widest">CNPJ: 38.229.678/0001-13</p>
+                                <p className="mt-3 font-extrabold italic text-white/50 tracking-widest">© 2025 Lexis Academy.</p>
                             </div>
                         </div>
                     </footer>
