@@ -87,7 +87,7 @@
         h1, h2, h3, h4 { letter-spacing: -0.02em; line-height: 1.15; }
         p { line-height: 1.7; letter-spacing: 0.01em; }
 
-        .cta-shadow { box-shadow: 0 10px 25px -5px rgba(251, 210, 76, 0.4); }
+        .cta-shadow { box-shadow: 0 15px 35px -5px rgba(251, 210, 76, 0.3); }
         .card-glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
         .text-gradient { background: linear-gradient(-45deg, #fbd24c, #f59e0b, #8c5414, #fbd24c); background-size: 400% 400%; animation: gradient-x 5s ease infinite; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .navbar-blur { backdrop-filter: blur(12px); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
@@ -95,7 +95,7 @@
         .module-card:hover { border-color: rgba(251, 210, 76, 0.5); transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5); }
         .icon-move { display: inline-block; transition: transform 0.3s ease; }
         .group:hover .icon-move { transform: scale(1.2) rotate(10deg); }
-        .bg-mesh { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(251, 210, 76, 0.05) 1px, transparent 0); background-size: 40px 40px; }
+        .bg-mesh { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.04) 1px, transparent 0); background-size: 32px 32px; }
         .modal-overlay { background: rgba(15, 23, 42, 0.85); }
 
         .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -261,8 +261,8 @@
         };
 
         const Button = ({ children, primary = false, className = "", onClick }) => (
-            <button className={`px-8 py-5 rounded-full font-extrabold text-sm transition-all active:scale-95 text-center inline-block relative overflow-hidden group uppercase tracking-widest ${primary ? "bg-[#fbd24c] text-[#0f172a] cta-shadow hover:bg-yellow-400" : "border-2 border-[#fbd24c] text-[#fbd24c] hover:bg-[#fbd24c]/10"} ${className}`} onClick={onClick}>
-                <span className="relative z-10 flex items-center justify-center gap-2">
+            <button className={`px-10 py-4.5 rounded-full font-extrabold text-sm transition-all active:scale-95 text-center inline-block relative overflow-hidden group tracking-tight ${primary ? "bg-[#fbd24c] text-[#0f172a] cta-shadow hover:bg-yellow-400" : "border-2 border-[#fbd24c] text-white hover:bg-[#fbd24c]/10"} ${className}`} onClick={onClick}>
+                <span className="relative z-10 flex items-center justify-center gap-2 uppercase tracking-wide">
                     {children}
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </span>
@@ -285,20 +285,20 @@
                 return () => window.removeEventListener("scroll", handleScroll);
             }, []);
             return (
-                <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled ? "navbar-blur py-3 shadow-2xl" : "bg-transparent py-6"}`}>
-                    <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled ? "navbar-blur py-3 shadow-2xl" : "bg-transparent py-8"}`}>
+                    <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
                         <div className="flex items-center gap-3 group cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
                             <img src="logo.png" alt="Lexis Logo" className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform duration-300" />
                             <span className="font-extrabold text-lg tracking-tighter hidden md:block group-hover:text-[#fbd24c] transition-colors uppercase text-white">Lexis Academy</span>
                         </div>
-                        <div className="hidden md:flex items-center gap-8 text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#94a3b8]">
+                        <div className="hidden md:flex items-center gap-8 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#94a3b8]">
                             <a href="#inicio" className="hover:text-[#fbd24c] transition-colors relative group">Início</a>
-                            <a href="#metodo" className="hover:text-[#fbd24c] transition-colors relative group">Método</a>
                             <a href="#modalidades" className="hover:text-[#fbd24c] transition-colors relative group">Modalidades</a>
+                            <a href="#conteudo" className="hover:text-[#fbd24c] transition-colors relative group">Conteúdo</a>
+                            <a href="#metodo" className="hover:text-[#fbd24c] transition-colors relative group">Método</a>
                             <a href="#depoimentos" className="hover:text-[#fbd24c] transition-colors relative group">Depoimentos</a>
-                            <a href="#faq" className="hover:text-[#fbd24c] transition-colors relative group">FAQ</a>
                         </div>
-                        <button onClick={() => onOpenModal()} className="bg-[#fbd24c] text-[#0f172a] px-7 py-3 rounded-full font-extrabold text-[10px] uppercase tracking-widest hover:bg-yellow-400 transition-all active:scale-95 shadow-lg shadow-yellow-500/20">
+                        <button onClick={() => onOpenModal()} className="bg-[#fbd24c] text-[#0f172a] px-7 py-3 rounded-full font-extrabold text-[10px] uppercase tracking-widest hover:bg-yellow-400 transition-all active:scale-95 shadow-lg shadow-yellow-500/10">
                             Falar com consultor
                         </button>
                     </div>
@@ -326,27 +326,27 @@
                     <Navbar onOpenModal={openModal} />
                     <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} defaultCourse={selectedCourse} />
 
-                    {/* HERO */}
-                    <header id="inicio" className="relative pt-48 pb-40 px-6 overflow-hidden bg-[#0f172a]">
-                        <div className="bg-mesh opacity-30"></div>
+                    {/* HERO SECTION REFINED TO MATCH REFERENCE */}
+                    <header id="inicio" className="relative pt-60 pb-48 px-6 overflow-hidden bg-[#0f172a]">
+                        <div className="bg-mesh opacity-40"></div>
                         <div className="max-w-6xl mx-auto text-center relative z-10 reveal">
-                            <div className="animate-float-in">
-                                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold mb-8 leading-[1.1] tracking-tight text-white uppercase">
-                                    Inglês é uma habilidade. <br/> Treine como <span className="text-gradient italic font-black">um atleta.</span>
-                                </h1>
-                            </div>
-                            <p className="text-[#94a3b8] text-lg md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium">
-                                A Lexis Academy substitui o "estudar" pelo "treinar". Transformamos o aprendizado passivo em automação cognitiva de alto desempenho.
+                            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.8rem] font-extrabold mb-10 leading-[1.05] tracking-tight text-white">
+                                Inglês é uma <span className="text-[#fbd24c]">habilidade.</span> <br/> 
+                                Treine como um atleta.
+                            </h1>
+                            <p className="text-[#94a3b8] text-lg md:text-2xl max-w-4xl mx-auto mb-16 leading-relaxed font-medium">
+                                A Lexis English Academy transforma o aprendizado em automação cognitiva. Escolha seu caminho e alcance a fluência real em tempo recorde.
                             </p>
-                            <div className="flex flex-col md:flex-row gap-6 justify-center reveal reveal-delay-2 animate-float-in" style={{ animationDelay: '0.5s' }}>
+                            <div className="flex flex-col md:flex-row gap-6 justify-center reveal reveal-delay-2">
                                 <Button primary onClick={() => openModal()}>Falar com um especialista</Button>
-                                <Button onClick={() => document.getElementById('metodo').scrollIntoView({behavior: 'smooth'})}>Entender a Ciência</Button>
+                                <Button onClick={() => document.getElementById('modalidades').scrollIntoView({behavior: 'smooth'})}>Conhecer as modalidades</Button>
                             </div>
                         </div>
-                        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#fbd24c]/10 rounded-full blur-[100px] animate-float"></div>
+                        {/* Decorative background blur */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-[140px] pointer-events-none"></div>
                     </header>
 
-                    {/* SEÇÃO MÉTODO REFORMULADA */}
+                    {/* SEÇÃO MÉTODO */}
                     <section id="metodo" className="py-32 px-6 bg-slate-50 text-[#0f172a] relative overflow-hidden scroll-mt-20">
                         <div className="max-w-6xl mx-auto relative z-10">
                             <div className="grid md:grid-cols-2 gap-20 items-center mb-32">
@@ -372,9 +372,9 @@
                                     </div>
                                 </div>
                                 <div className="bg-[#0f172a] p-10 rounded-[3rem] text-white shadow-2xl reveal">
-                                    <h3 className="text-2xl font-black mb-8 border-l-4 border-[#fbd24c] pl-6 uppercase tracking-tight">O Inglês como <br/>Esporte Cognitivo</h3>
+                                    <h3 className="text-2xl font-black mb-8 border-l-4 border-[#fbd24c] pl-6 uppercase tracking-tight text-white">O Inglês como <br/>Esporte Cognitivo</h3>
                                     <p className="text-[#94a3b8] mb-8 font-medium">Falar um novo idioma exige o que chamamos de <strong>automação cognitiva</strong>. Para fluência real, o cérebro deve realizar:</p>
-                                    <div className="space-y-6">
+                                    <div className="space-y-6 text-white">
                                         {[
                                             { t: "Processamento Real-Time", d: "Coordenação instantânea entre audição e resposta." },
                                             { t: "Tomada de Decisão Ágil", d: "Escolha automática de estruturas em tempo real." },
@@ -441,7 +441,7 @@
                             
                             <div className="grid lg:grid-cols-3 gap-8 items-stretch">
                                 {/* MAESTRIA ONLINE */}
-                                <div className="modality-card bg-slate-900/40 backdrop-blur-xl border-white/5 flex flex-col h-full group reveal">
+                                <div className="modality-card bg-slate-900/40 backdrop-blur-xl border-white/5 flex flex-col h-full group reveal text-white">
                                     <div className="p-8 md:p-10 flex flex-col h-full">
                                         <div className="flex justify-between items-start mb-10">
                                             <div className="w-16 h-16 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 shadow-inner">
@@ -528,7 +528,7 @@
                                 </div>
 
                                 {/* THE WAY CÍCLICO */}
-                                <div className="modality-card bg-slate-900/40 backdrop-blur-xl border-white/5 flex flex-col h-full group reveal reveal-delay-2">
+                                <div className="modality-card bg-slate-900/40 backdrop-blur-xl border-white/5 flex flex-col h-full group reveal reveal-delay-2 text-white">
                                     <div className="p-8 md:p-10 flex flex-col h-full">
                                         <div className="flex justify-between items-start mb-10">
                                             <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-inner">
@@ -577,7 +577,7 @@
                     <section id="depoimentos" className="py-32 px-6 bg-[#0f172a] scroll-mt-20">
                         <div className="max-w-7xl mx-auto">
                             <SectionHeader tag="Evolução Validada" title="O que dizem os alunos" subtitle="Profissionais que saíram da teoria para a segurança prática através do treino Lexis." />
-                            <div className="grid md:grid-cols-3 gap-8">
+                            <div className="grid md:grid-cols-3 gap-8 text-white">
                                 {[
                                     { n: "Ricardo M.", j: "Diretor Comercial", d: "Tentei 4 escolas e nunca saí do zero. Com a Imersão Lexis, em 14 dias destravei reuniões internacionais." },
                                     { n: "Ana Clara F.", j: "Arquiteta", d: "Finalmente entendi que inglês é treino muscular e não estudo de gramática. Fluência veio sem pressão." },
