@@ -499,11 +499,14 @@
                     <section id="depoimentos" className="py-32 px-6 bg-[#0f172a] scroll-mt-20">
                         <div className="max-w-7xl mx-auto">
                             <SectionHeader tag="Evolução Validada" title="O que dizem os alunos" subtitle="Profissionais que saíram da teoria para a segurança prática." />
-                            <div className="grid md:grid-cols-3 gap-8 text-white">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-white">
                                 {[
                                     { n: "Ricardo M.", j: "Diretor Comercial", d: "Tentei 4 escolas e nunca saí do zero. Com a Imersão Lexis, em 14 dias destravei reuniões internacionais." },
                                     { n: "Ana Clara F.", j: "Arquiteta", d: "Finalmente entendi que inglês é treino muscular e não estudo de gramática. Fluência veio sem pressão." },
-                                    { n: "Gustavo S.", j: "Dev Sr.", d: "Parei de traduzir mentalmente. As frases começaram a sair naturais em menos de 2 meses no Maestria." }
+                                    { n: "Gustavo S.", j: "Dev Sr.", d: "Parei de traduzir mentalmente. As frases começaram a sair naturais em menos de 2 meses no Maestria." },
+                                    { n: "Carlos Eduardo T.", j: "VP de Operações", d: "O modelo de treinamento procedural da Lexis é o único que funcionou para minha rotina exaustiva. Em poucas semanas, a barreira da fala desapareceu." },
+                                    { n: "Mariana L.", j: "Head de Marketing", d: "A Imersão foi o divisor de águas. Saí de um inglês 'travado' para apresentar cases em Nova York com total confiança e sem roteiro." },
+                                    { n: "Fernando J.", j: "Especialista Cloud", d: "A metodologia focada em fonética e automação mudou meu jogo. Hoje participo de daily calls com o time global sem precisar de tradutor ou hesitação." }
                                 ].map((test, i) => (
                                     <div key={i} className={`card-glass p-10 rounded-[2.5rem] relative overflow-hidden group hover:border-[#fbd24c]/50 transition-all duration-500 reveal reveal-delay-${(i % 3) + 1}`}>
                                         <div className="text-[#fbd24c] text-3xl mb-6 font-serif">"</div>
