@@ -40,6 +40,7 @@
                     animation: {
                         'gradient-x': 'gradient-x 15s ease infinite',
                         'float': 'float 6s ease-in-out infinite',
+                        'float-slow': 'float-slow 8s ease-in-out infinite',
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
@@ -50,6 +51,10 @@
                         'float': {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'float-slow': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-12px)' },
                         }
                     }
                 }
@@ -102,6 +107,8 @@
             background: radial-gradient(circle at top right, rgba(255,255,255,0.05), transparent);
             pointer-events: none;
         }
+
+        .animate-float-in { animation: float-slow 8s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-[#0f172a] text-white antialiased">
@@ -184,16 +191,20 @@
 
             return (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 modal-overlay animate-in fade-in duration-300">
-                    <div className="bg-[#0f172a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 relative shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto text-white">
+                    <div className="bg-[#0f172a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 relative shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto text-white text-center">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#fbd24c] to-[#f59e0b]"></div>
                         <button onClick={onClose} className="absolute top-6 right-6 text-white/40 hover:text-[#fbd24c] transition-colors">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
-                        <div className="text-center mb-8">
-                            <h3 className="text-2xl font-black mb-2 tracking-tight">Solicitar Proposta</h3>
-                            <p className="text-white/60 text-sm font-medium">Preencha os dados abaixo para iniciar seu treinamento.</p>
+                        <div className="mb-8">
+                            <h3 className="text-2xl font-black mb-3 tracking-tight uppercase leading-none">
+                                Destrave sua <span className="text-[#fbd24c]">Fluência</span> agora
+                            </h3>
+                            <p className="text-white/60 text-sm font-medium leading-relaxed max-w-[280px] mx-auto">
+                                Preencha os detalhes e receba um plano de treinamento personalizado em minutos.
+                            </p>
                         </div>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4 text-left">
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#fbd24c] mb-1.5">Nome Completo</label>
                                 <input required type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors font-medium" placeholder="Ex: João Silva" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
@@ -207,16 +218,16 @@
                                 <input required type="tel" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors font-medium" placeholder="(00) 00000-0000" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#fbd24c] mb-1.5">Curso de Interesse</label>
+                                <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#fbd24c] mb-1.5">Escolha seu Caminho</label>
                                 <select required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#fbd24c] focus:outline-none transition-colors appearance-none font-medium" value={formData.course} onChange={e => setFormData({...formData, course: e.target.value})}>
-                                    <option value="" className="bg-[#0f172a]">Selecione um curso</option>
+                                    <option value="" className="bg-[#0f172a]">Selecione uma modalidade</option>
                                     <option value="Maestria Online" className="bg-[#0f172a]">Maestria Online (Intensivo)</option>
                                     <option value="Imersão Presencial" className="bg-[#0f172a]">Imersão Presencial (S. Carlos)</option>
                                     <option value="The Way Cíclico" className="bg-[#0f172a]">The Way Cíclico (Flexível)</option>
                                 </select>
                             </div>
                             <button type="submit" disabled={isSubmitting} className={`w-full bg-[#fbd24c] text-[#0f172a] py-4 rounded-xl font-extrabold uppercase tracking-[0.15em] hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/20 active:scale-95 flex items-center justify-center gap-3 mt-4 ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}>
-                                {isSubmitting ? "Processando..." : "Receber Proposta"}
+                                {isSubmitting ? "Enviando Requisição..." : "Garantir minha Consultoria"}
                             </button>
                         </form>
                     </div>
@@ -295,14 +306,17 @@
                     <header id="inicio" className="relative pt-48 pb-40 px-6 overflow-hidden bg-[#0f172a]">
                         <div className="bg-mesh opacity-30"></div>
                         <div className="max-w-6xl mx-auto text-center relative z-10 reveal">
-                            <h1 className="text-5xl md:text-[5.5rem] font-black mb-10 leading-[1.05] tracking-tight text-white uppercase">
-                                Inglês é uma <span className="text-gradient italic font-extrabold italic">habilidade.</span><br/>
-                                Treine como um atleta.
-                            </h1>
-                            <p className="text-[#94a3b8] text-xl md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium">
+                            {/* Tipografia Refinada para Máxima Legibilidade e Impacto */}
+                            <div className="animate-float-in">
+                                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold mb-8 leading-[1.1] tracking-tight text-white uppercase">
+                                    Inglês é uma <span className="text-gradient italic font-black">habilidade.</span><br/>
+                                    Treine como <span className="text-white/90">um atleta.</span>
+                                </h1>
+                            </div>
+                            <p className="text-[#94a3b8] text-lg md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium">
                                 A Lexis Academy transforma o aprendizado passivo em automação cognitiva de alto desempenho. Escolha sua modalidade e atinja a fluência real.
                             </p>
-                            <div className="flex flex-col md:flex-row gap-6 justify-center reveal reveal-delay-2">
+                            <div className="flex flex-col md:flex-row gap-6 justify-center reveal reveal-delay-2 animate-float-in" style={{ animationDelay: '0.5s' }}>
                                 <Button primary onClick={() => openModal()}>Falar com um especialista</Button>
                                 <Button onClick={() => document.getElementById('modalidades').scrollIntoView()}>Conhecer modalidades</Button>
                             </div>
@@ -342,7 +356,7 @@
                         </div>
                     </section>
 
-                    {/* MODALIDADES - REFINED & SPECIFIC ICONS */}
+                    {/* MODALIDADES */}
                     <section id="modalidades" className="py-32 px-6 bg-[#020617] scroll-mt-20 relative overflow-hidden text-white">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px]"></div>
                         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#fbd24c]/5 rounded-full blur-[120px]"></div>
@@ -356,7 +370,7 @@
                             
                             <div className="grid lg:grid-cols-3 gap-8 items-stretch">
                                 {/* MAESTRIA ONLINE */}
-                                <div className="modality-card bg-slate-900/40 backdrop-blur-xl border-white/5 flex flex-col group reveal">
+                                <div className="modality-card bg-slate-900/40 backdrop-blur-xl border-white/5 flex flex-col h-full group reveal">
                                     <div className="p-8 md:p-10 flex flex-col h-full">
                                         <div className="flex justify-between items-start mb-10">
                                             <div className="w-16 h-16 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 shadow-inner">
@@ -398,8 +412,8 @@
                                     </div>
                                 </div>
 
-                                {/* IMERSÃO PRESENCIAL - Lexis Purple #820AD1 */}
-                                <div className="modality-card bg-slate-900 border-lexisPurple/30 ring-1 ring-lexisPurple/20 flex flex-col group reveal reveal-delay-1 scale-105 z-20 shadow-2xl shadow-lexisPurple/10">
+                                {/* IMERSÃO PRESENCIAL */}
+                                <div className="modality-card bg-slate-900 border-lexisPurple/30 ring-1 ring-lexisPurple/20 flex flex-col h-full group reveal reveal-delay-1 scale-105 z-20 shadow-2xl shadow-lexisPurple/10">
                                     <div className="absolute top-0 right-10 bg-lexisPurple text-white px-4 py-1 rounded-b-xl text-[9px] font-black uppercase tracking-widest">Elite Executiva</div>
                                     <div className="p-8 md:p-10 flex flex-col h-full">
                                         <div className="flex justify-between items-start mb-10">
@@ -443,7 +457,7 @@
                                 </div>
 
                                 {/* THE WAY CÍCLICO */}
-                                <div className="modality-card bg-slate-900/40 backdrop-blur-xl border-white/5 flex flex-col group reveal reveal-delay-2">
+                                <div className="modality-card bg-slate-900/40 backdrop-blur-xl border-white/5 flex flex-col h-full group reveal reveal-delay-2">
                                     <div className="p-8 md:p-10 flex flex-col h-full">
                                         <div className="flex justify-between items-start mb-10">
                                             <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-inner">
